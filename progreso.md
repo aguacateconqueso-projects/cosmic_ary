@@ -94,6 +94,16 @@ Vercel redespliega solo al hacer push (si el repo está conectado).
 - Desplegado en Vercel (por el usuario).
 - Creado este `progreso.md`.
 
+### 2026-07-20 — Sesión 2 · Banner del hero
+- Reemplazadas las frases inventadas por Design ("Everything you want is in the unknown."
+  / "Transformational mentor…") por el **banner real de Ariana**: wordmark **CosmicAry**
+  (Fraunces, rojo) + tagline **"Reprogram your mind & create your dream life"**, manteniendo
+  la noche estrellada de fondo.
+- Nuevos estilos `.wordmark` / `.hero__tagline` en `styles.css`; verificado en desktop y móvil.
+- Se conservan los CTAs "Join the Academy" / "Free yoga on YouTube".
+- Flujo acordado: **un PR por mejora** hacia `main` (rama de trabajo → PR → merge → deploy).
+- Pendiente inmediato: animar el fondo de la noche (siguiente paso pedido por Ariana).
+
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
 - Qué se hizo

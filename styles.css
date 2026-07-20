@@ -122,21 +122,34 @@ a:hover { color: var(--red-bright); }
   align-items: center;
   gap: clamp(20px,3.5vh,32px);
 }
-.hero__title {
+/* Wordmark (CosmicAry) + tagline — the hero banner */
+.wordmark-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px,2.4vh,22px);
+}
+.wordmark {
   margin: 0;
   font-family: Fraunces, serif;
-  font-weight: 350;
-  font-size: clamp(42px,10.5vw,92px);
-  line-height: 1.04;
-  letter-spacing: -0.015em;
-  text-wrap: balance;
+  font-weight: 400;
+  font-size: clamp(52px,15.5vw,168px);
+  line-height: 0.92;
+  letter-spacing: -0.025em;
+  color: var(--red-bright);
+  text-wrap: nowrap;
 }
-.hero__lede {
+.hero__tagline {
   margin: 0;
-  max-width: 44ch;
-  font-size: clamp(15px,4vw,18px);
-  line-height: 1.6;
-  color: rgba(242,237,228,.72);
+  max-width: 90vw;
+  font-family: Fraunces, serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: clamp(11px,2.7vw,19px);
+  line-height: 1.5;
+  color: rgba(242,237,228,.82);
+  text-wrap: balance;
 }
 .hero__actions {
   display: flex;
