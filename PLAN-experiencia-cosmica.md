@@ -44,7 +44,7 @@ una hora del día**, el nodo florece con precio + CTA, y el aura vira de tono.
 
 ## 3. Bloques a construir (técnico, en orden)
 
-1. [ ] **Prototipo del AURA** (aislado, página suelta) — la pieza estrella. Canvas 2D: pétalos radiales difuminados, blending translúcido, rotación + latido, lerp de color cálido↔frío en bucle. + grano. **← empezamos por aquí.**
+1. [x] **Prototipo del AURA** (`/aura.html`) — canvas 2D: pétalos radiales alternos, blending aditivo sobre la noche, rotación + latido, deriva de color cálido↔frío, grano, y panel de ajustes en vivo. ✅ v1
 2. [ ] **Sistema de "cielos"** — capas de degradado a pantalla completa (amanecer, mañana, mediodía, atardecer, anochecer, noche) con crossfade suave + debounce.
 3. [ ] **Noche estrellada** — refactor del starfield actual como cielo base.
 4. [ ] **Componente nodo-oferta** — colapsado (ícono + título + precio) → al enfocar florece (subtítulo + CTA).
