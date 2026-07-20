@@ -104,6 +104,19 @@ Vercel redespliega solo al hacer push (si el repo está conectado).
 - Flujo acordado: **un PR por mejora** hacia `main` (rama de trabajo → PR → merge → deploy).
 - Pendiente inmediato: animar el fondo de la noche (siguiente paso pedido por Ariana).
 
+### 2026-07-20 — Sesión 3 · Análisis de referencia + prototipo de aura
+- Analizado el video de referencia ("Capturing Aura") extrayendo fotogramas con ffmpeg:
+  flor/aura orgánica radial que respira, rota y deriva de rosa a azul, sobre fondo claro.
+- Consultoría de dirección: se decide **reestructurar** el sitio a un **storefront inmersivo**
+  (Ariana vende, no cuenta historia). Concepto: pantalla única con aura central +
+  **constelación de ofertas** + **cielo que cambia** (hover desktop / tap + scroll móvil).
+- Creado `PLAN-experiencia-cosmica.md` (checklist + roadmap por PRs).
+- Decisiones: orden por conversión (flagship primero) · fallback móvil = tap + scroll ·
+  empezar con 4 cielos · foto de Ariana NO se usa aún · links = placeholders primero.
+- **Construido `aura.html`** (primer bloque): aura en canvas sobre la noche, con pétalos
+  radiales alternos, deriva de color rosa↔azul, latido, grano y panel de ajustes en vivo.
+- Pendiente: feedback del aura → luego sistema de cielos.
+
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
 - Qué se hizo

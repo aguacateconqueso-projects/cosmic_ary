@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CosmicAry — Prototipo de aura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cosmos: #0B0E1A;
+    --cream: #F2EDE4;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--cosmos);
+    color: var(--cream);
+    font-family: Inter, system-ui, sans-serif;
+    overflow: hidden;
+  }
+
+  /* stacking: stars < ambient glow < aura < grain < UI */
+  #stars, #aura {
+    position: fixed; inset: 0; width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  #stars { z-index: 0; }
+  #aura  { z-index: 2; filter: blur(var(--auraBlur, 12px)); }
+
+  /* film grain */
+  #grain {
+    position: fixed; inset: -50%; width: 200%; height: 200%;
+    z-index: 3; pointer-events: none; opacity: .05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+    animation: grainShift 6s steps(6) infinite;
+  }
+  @keyframes grainShift {
+    0%{transform:translate(0,0)} 20%{transform:translate(-4%,3%)} 40%{transform:translate(3%,-2%)}
+    60%{transform:translate(-2%,4%)} 80%{transform:translate(4%,2%)} 100%{transform:translate(0,0)}
+  }
+
+  /* wordmark preview, to see the aura behind it */
+  .stage {
+    position: fixed; inset: 0; z-index: 4;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; pointer-events: none;
+  }
+  .eyebrow {
+    margin: 0 0 18px; font-size: 11px; letter-spacing: .34em; text-transform: uppercase;
+    color: rgba(242,237,228,.5);
+  }
+  .wordmark {
+    margin: 0; font-family: Fraunces, serif; font-weight: 400;
+    font-size: clamp(52px, 15vw, 150px); line-height: .9; letter-spacing: -0.025em;
+    color: var(--cream);
+    text-shadow: 0 2px 60px rgba(11,14,26,.7);
+  }
+  .tagline {
+    margin: 20px 0 0; font-family: Fraunces, serif; text-transform: uppercase;
+    letter-spacing: .2em; font-size: clamp(10px,2.4vw,15px); color: rgba(242,237,228,.7);
+  }
+  .flag {
+    position: fixed; top: 16px; left: 18px; z-index: 5;
+    font-size: 10px; letter-spacing: .28em; text-transform: uppercase; color: rgba(242,237,228,.35);
+  }
+
+  /* controls */
+  .panel {
+    position: fixed; top: 14px; right: 14px; z-index: 6;
+    width: 236px; padding: 16px 16px 8px; border-radius: 14px;
+    background: rgba(20,22,34,.72); backdrop-filter: blur(10px);
+    border: 1px solid rgba(242,237,228,.12);
+    font-size: 12px; transition: transform .3s ease, opacity .3s ease;
+  }
+  .panel.hidden { transform: translateX(calc(100% + 20px)); opacity: 0; }
+  .panel h3 { margin: 0 0 12px; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: rgba(242,237,228,.55); font-weight: 500; }
+  .ctrl { margin-bottom: 12px; }
+  .ctrl label { display: flex; justify-content: space-between; margin-bottom: 5px; color: rgba(242,237,228,.8); }
+  .ctrl label b { font-weight: 500; color: var(--cream); font-variant-numeric: tabular-nums; }
+  input[type=range] { width: 100%; accent-color: #C0392B; height: 3px; }
+  .toggle {
+    position: fixed; top: 14px; right: 14px; z-index: 7;
+    width: 34px; height: 34px; border-radius: 10px; border: 1px solid rgba(242,237,228,.15);
+    background: rgba(20,22,34,.72); color: var(--cream); cursor: pointer; font-size: 15px;
+    display: none; align-items: center; justify-content: center;
+  }
+  .toggle.show { display: flex; }
+  .hint { font-size: 10px; color: rgba(242,237,228,.4); text-align: center; margin: 4px 0 8px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    #grain { animation: none; }
+  }
+</style>
+</head>
+<body>
+  <canvas id="stars"></canvas>
+  <canvas id="aura"></canvas>
+  <div id="grain"></div>
+
+  <div class="stage">
+    <p class="eyebrow">Ariana Del Rosario</p>
+    <h1 class="wordmark">CosmicAry</h1>
+    <p class="tagline">Reprogram your mind &amp; create your dream life</p>
+  </div>
+
+  <div class="flag">Prototipo · aura</div>
+
+  <button class="toggle" id="toggle" aria-label="Mostrar controles">⚙</button>
+  <div class="panel" id="panel">
+    <h3>Aura · ajustes</h3>
+    <div class="ctrl"><label>Pétalos <b id="vPetals">18</b></label><input id="petals" type="range" min="6" max="30" step="1" value="18"></div>
+    <div class="ctrl"><label>Latido <b id="vBreathe">0.28</b></label><input id="breathe" type="range" min="0" max="0.6" step="0.01" value="0.28"></div>
+    <div class="ctrl"><label>Velocidad giro <b id="vSpin">0.35</b></label><input id="spin" type="range" min="0" max="1.5" step="0.05" value="0.35"></div>
+    <div class="ctrl"><label>Deriva color <b id="vDrift">0.5</b></label><input id="drift" type="range" min="0" max="1" step="0.05" value="0.5"></div>
+    <div class="ctrl"><label>Difuminado <b id="vBlur">12</b></label><input id="blur" type="range" min="0" max="60" step="1" value="12"></div>
+    <div class="ctrl"><label>Tamaño <b id="vScale">1.00</b></label><input id="scale" type="range" min="0.5" max="1.6" step="0.05" value="1"></div>
+    <div class="ctrl"><label>Brillo <b id="vGlow">0.90</b></label><input id="glow" type="range" min="0.3" max="1.5" step="0.05" value="0.9"></div>
+    <p class="hint">Toca "H" para ocultar la UI</p>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- palette (luminous, additive over the night) ----
+  var WARM = [239, 116, 148];   // rose
+  var COOL = [116, 140, 240];   // periwinkle
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function mixCol(t) { return [
+    Math.round(lerp(WARM[0], COOL[0], t)),
+    Math.round(lerp(WARM[1], COOL[1], t)),
+    Math.round(lerp(WARM[2], COOL[2], t))
+  ]; }
+  function smoothstep(t){ t=Math.max(0,Math.min(1,t)); return t*t*(3-2*t); }
+
+  // ---- params (bound to sliders) ----
+  var P = { petals:18, breathe:0.28, spin:0.35, drift:0.5, blur:12, scale:1, glow:0.9 };
+
+  // ---- stars (faint base) ----
+  var starsC = document.getElementById('stars'), sctx = starsC.getContext('2d');
+  function mulberry32(a){return function(){a|=0;a=(a+0x6D2B79F5)|0;var t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
+  function drawStars(){
+    var dpr=Math.min(devicePixelRatio||1,2), w=innerWidth, h=innerHeight;
+    starsC.width=w*dpr; starsC.height=h*dpr; starsC.style.width=w+'px'; starsC.style.height=h+'px';
+    sctx.setTransform(dpr,0,0,dpr,0,0); sctx.clearRect(0,0,w,h);
+    var count=Math.round(90*w*h/700000), rand=mulberry32(7);
+    for(var i=0;i<count;i++){
+      var x=rand()*w,y=rand()*h,r=0.3+rand()*0.9,al=0.12+rand()*0.5,tt=rand();
+      var col=tt<0.75?'242,237,228':(tt<0.9?'255,224,196':'196,208,255');
+      sctx.beginPath(); sctx.arc(x,y,r,0,7); sctx.fillStyle='rgba('+col+','+al.toFixed(2)+')'; sctx.fill();
+    }
+  }
+
+  // ---- aura ----
+  var auraC = document.getElementById('aura'), actx = auraC.getContext('2d');
+  var W=0, H=0, DPR=1;
+  function resize(){
+    DPR=Math.min(devicePixelRatio||1,2); W=innerWidth; H=innerHeight;
+    auraC.width=W*DPR; auraC.height=H*DPR; auraC.style.width=W+'px'; auraC.style.height=H+'px';
+    drawStars();
+  }
+
+  function petal(cx, cy, ang, r0, len, wid, rgb, alpha){
+    actx.save();
+    actx.translate(cx, cy);
+    actx.rotate(ang);
+    actx.translate(r0, 0);           // start from an inner ring, not the dead center
+    var span = len - r0;
+    var g = actx.createLinearGradient(0,0, span,0);
+    var c = rgb[0]+','+rgb[1]+','+rgb[2];
+    g.addColorStop(0,   'rgba('+c+','+(alpha*0.55).toFixed(3)+')');
+    g.addColorStop(0.45,'rgba('+c+','+alpha.toFixed(3)+')');
+    g.addColorStop(0.8, 'rgba('+c+','+(alpha*0.45).toFixed(3)+')');
+    g.addColorStop(1,   'rgba('+c+',0)');
+    actx.fillStyle = g;
+    actx.beginPath();
+    actx.moveTo(0,0);
+    actx.quadraticCurveTo(span*0.4,  wid, span, 0);
+    actx.quadraticCurveTo(span*0.4, -wid, 0,   0);
+    actx.closePath();
+    actx.fill();
+    actx.restore();
+  }
+
+  function frame(now){
+    var t = now * 0.001;
+    actx.setTransform(DPR,0,0,DPR,0,0);
+    actx.clearRect(0,0,W,H);
+    actx.globalCompositeOperation = 'lighter';
+
+    var cx = W/2, cy = H/2;
+    var base = Math.min(W,H) * 0.34 * P.scale;
+    var N = P.petals;
+    var globalSpin = reduce ? 0 : t * P.spin * 0.12;
+    // color balance drifts warm<->cool over ~18s
+    var balance = reduce ? 0.5 : (Math.sin(t * 0.34) * 0.5 + 0.5) * P.drift + (1-P.drift)*0.5;
+
+    // soft ambient halo (subtle, keeps petals readable)
+    var amb = mixCol(balance);
+    var ag = actx.createRadialGradient(cx,cy,base*0.1, cx,cy, base*1.5);
+    ag.addColorStop(0, 'rgba('+amb[0]+','+amb[1]+','+amb[2]+','+(0.10*P.glow).toFixed(3)+')');
+    ag.addColorStop(1, 'rgba('+amb[0]+','+amb[1]+','+amb[2]+',0)');
+    actx.fillStyle = ag; actx.beginPath(); actx.arc(cx,cy,base*1.5,0,7); actx.fill();
+
+    var r0 = base * 0.10;   // inner ring petals radiate from
+    // two rings of petals, with alternating long/short lobes for a spiky bloom
+    for (var ring=0; ring<2; ring++){
+      var ringLen = base * (ring===0 ? 1.0 : 0.70);
+      var ringWid = base * (ring===0 ? 0.16 : 0.20);
+      var offset = ring===0 ? 0 : Math.PI/N;
+      for (var i=0;i<N;i++){
+        var a = (i/N)*Math.PI*2 + offset + globalSpin + (ring? -globalSpin*0.6:0);
+        var wob = reduce ? 0 : Math.sin(t*0.7 + i*1.3 + ring)*0.06;
+        var alt = (i % 2 === 0) ? 1 : 0.68;    // alternating lobe length
+        var breathe = reduce ? 1 : (1 + P.breathe*Math.sin(t*0.9 + i*(6.28/N)*2 + ring*1.6));
+        var len = ringLen * alt * breathe;
+        var localMix = smoothstep(balance + 0.6*Math.sin((i/N)*Math.PI*2 + t*0.25 + ring));
+        var rgb = mixCol(localMix);
+        var alpha = (ring===0 ? 0.34 : 0.26) * P.glow;
+        petal(cx, cy, a+wob, r0, Math.max(len, r0+20), ringWid, rgb, alpha);
+      }
+    }
+
+    // gentle core (not a white blob)
+    var core = mixCol(balance);
+    var cg = actx.createRadialGradient(cx,cy,0, cx,cy, base*0.32);
+    cg.addColorStop(0, 'rgba(255,236,242,'+(0.28*P.glow).toFixed(3)+')');
+    cg.addColorStop(0.5, 'rgba('+core[0]+','+core[1]+','+core[2]+','+(0.18*P.glow).toFixed(3)+')');
+    cg.addColorStop(1, 'rgba('+core[0]+','+core[1]+','+core[2]+',0)');
+    actx.fillStyle = cg; actx.beginPath(); actx.arc(cx,cy,base*0.32,0,7); actx.fill();
+
+    actx.globalCompositeOperation = 'source-over';
+    if (!reduce) raf = requestAnimationFrame(frame);
+  }
+
+  // ---- controls ----
+  function bind(id, key, fmt){
+    var el=document.getElementById(id), out=document.getElementById('v'+id.charAt(0).toUpperCase()+id.slice(1));
+    function upd(){ P[key]=parseFloat(el.value); if(out) out.textContent=fmt?fmt(P[key]):P[key];
+      if(key==='blur') document.getElementById('aura').style.setProperty('--auraBlur', P.blur+'px'); }
+    el.addEventListener('input', upd); upd();
+  }
+  bind('petals','petals'); bind('breathe','breathe',function(v){return v.toFixed(2);});
+  bind('spin','spin',function(v){return v.toFixed(2);}); bind('drift','drift',function(v){return v.toFixed(2);});
+  bind('blur','blur'); bind('scale','scale',function(v){return v.toFixed(2);});
+  bind('glow','glow',function(v){return v.toFixed(2);});
+
+  var panel=document.getElementById('panel'), toggle=document.getElementById('toggle');
+  toggle.addEventListener('click', function(){ panel.classList.remove('hidden'); toggle.classList.remove('show'); });
+  panel.addEventListener('dblclick', function(){ panel.classList.add('hidden'); toggle.classList.add('show'); });
+  // "H" hides all UI to admire the aura
+  var uiHidden=false;
+  addEventListener('keydown', function(e){
+    if(e.key==='h'||e.key==='H'){ uiHidden=!uiHidden;
+      document.querySelectorAll('.stage,.panel,.flag,.toggle').forEach(function(n){ n.style.visibility=uiHidden?'hidden':''; });
+    }
+  });
+
+  // ---- boot ----
+  var raf;
+  addEventListener('resize', resize);
+  resize();
+  if (reduce) { requestAnimationFrame(frame); }   // one static paint
+  else { raf = requestAnimationFrame(frame); }
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden){ cancelAnimationFrame(raf); } else if(!reduce){ raf=requestAnimationFrame(frame); }
+  });
+})();
+</script>
+</body>
+</html>
