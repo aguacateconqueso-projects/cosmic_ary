@@ -309,6 +309,21 @@ Vercel redespliega solo al hacer push/merge (si el repo está conectado).
 - **Recordatorio de flujo reforzado:** cada cambio = **rama fresca desde `main` + PR nuevo**. Se
   estaba empujando fixes a ramas cuyo PR ya estaba mergeado (no se veían). Corregido.
 
+### 2026-07-21 — Sesión 12 · Cierre aterriza en el "card con precio" (sin salto)
+- **Feedback:** el fix anterior dejaba el cierre yendo al card **sin** precio (nodo en reposo) mientras
+  el panel sí tenía precio → seguía viéndose un salto "con precio → card inicial".
+- **Solución (idea del usuario):** que el card muestre el **precio de principio a fin** y aterrice en
+  el nodo **con precio**. Implementado:
+  - El **ghost** ahora es un **clon exacto del nodo flagship en estado activo** (título + precio + CTA).
+    JS copia el `innerHTML` del nodo al ghost y el CSS fuerza precio/CTA visibles → el card muestra el
+    precio durante todo el morph (abrir y cerrar).
+  - Se mide el rect del nodo en su tamaño **activo** (`stableRect`, ignora la transición en curso) para
+    que el card arranque/aterrice exactamente sobre el nodo bloomeado.
+  - Al cerrar se **mantiene el nodo activo** (`setPhase(academyPhase, node)`): el nodo queda mostrando
+    precio + CTA y el cielo se queda en la fase Academy (nada de volver a oscuro).
+- Verificado en Chromium (1440×900): el precio se mantiene visible durante el encogido y el nodo termina
+  activo con precio (`is-active`, precio opacity 1). Cierre continuo, sin salto. Sin errores de app.
+
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
 - Qué se hizo
