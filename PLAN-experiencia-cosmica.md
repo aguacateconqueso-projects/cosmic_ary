@@ -44,15 +44,15 @@ una hora del día**, el nodo florece con precio + CTA, y el aura vira de tono.
 
 ## 3. Bloques a construir (técnico, en orden)
 
-1. [x] **Prototipo del AURA** (`/aura.html`) — canvas 2D: pétalos radiales alternos, blending aditivo sobre la noche, rotación + latido, deriva de color cálido↔frío, grano, y panel de ajustes en vivo. ✅ v1
-2. [ ] **Sistema de "cielos"** — capas de degradado a pantalla completa (amanecer, mañana, mediodía, atardecer, anochecer, noche) con crossfade suave + debounce.
-3. [ ] **Noche estrellada** — refactor del starfield actual como cielo base.
-4. [ ] **Componente nodo-oferta** — colapsado (ícono + título + precio) → al enfocar florece (subtítulo + CTA).
-5. [ ] **Layout constelación DESKTOP** — disposición radial/orbital alrededor del aura.
-6. [ ] **Layout constelación MÓVIL** — apilado vertical elegante; el cielo viaja con el scroll.
-7. [ ] **Interacción de enfoque** — hover/focus/tap → cambia cielo + florece nodo + vira el aura.
-8. [ ] **Bloque de identidad** — "Ariana Del Rosario · Transformational Mentor" + redes.
-9. [ ] **Integración final** — juntar todo en la pantalla única.
+1. [x] **Prototipo del AURA** (ahora en `index.html`) — canvas 2D: pétalos radiales alternos, blending aditivo sobre la noche, rotación + latido, deriva de color cálido↔frío, grano, y panel de ajustes en vivo. ✅ v1
+2. [x] **Sistema de "cielos"** — 7 capas de degradado a pantalla completa (amanecer→crepúsculo) con crossfade por opacidad (CSS transition). ✅
+3. [x] **Noche estrellada** — starfield reutilizado como cielo base; se atenúa según la "luz" del cielo activo. ✅
+4. [x] **Componente nodo-oferta** — colapsado (punto + título + precio) → al enfocar florece (CTA). Sin subtítulos (venta pura). ✅
+5. [x] **Layout constelación DESKTOP** — radial: órbita interior premium (triángulo apuntando abajo) + exterior entrada (esquinas), líneas de constelación al centro. ✅
+6. [x] **Layout constelación MÓVIL** — apilado vertical con etiquetas de órbita; el cielo viaja con el scroll (IntersectionObserver, tarjeta centrada = activa). ✅
+7. [x] **Interacción de enfoque** — hover/focus (desktop), tap + scroll-center (móvil) → cambia cielo + florece nodo + vira el aura. ✅
+8. [~] **Bloque de identidad** — strip inferior con "Free yoga on YouTube" + redes (placeholders). Falta el título "Transformational Mentor" si se quiere.
+9. [x] **Integración final** — todo vive en la pantalla única (`index.html`). ✅ v1
 
 ## 4. Calidad transversal (no negociable)
 
