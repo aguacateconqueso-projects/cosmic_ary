@@ -7,6 +7,10 @@ Cuando empieces una sesión nueva, lee este archivo primero. Cuando termines, ac
 
 ## 1. Contexto del proyecto
 
+> ⚠️ **IMPORTANTE — naturaleza del proyecto:** esto es un **DEMO para captar a Ariana como cliente**.
+> Ariana **NO** está involucrada, **no** revisa ni aprueba nada todavía. Todas las decisiones de diseño
+> son **nuestras** (para hacer un pitch convincente), no de ella. **No atribuir decisiones a Ariana.**
+
 - **Qué es:** Landing page de **Ariana Del Rosario / CosmicAry** — *Awakening Academy*, escuela de transformación y manifestación.
 - **Origen del diseño:** proyecto Claude Design **"CosmicAry demo"** (`CosmicAry Demo.dc.html`).
   El fuente original está en `design/` como referencia (usa el runtime de Claude Design, no se despliega tal cual).
@@ -46,9 +50,9 @@ README.md       Doc de instalación/deploy
 
 - [x] Diseño importado desde Claude Design
 - [x] Demo "sobrio" (rojo) implementado y desplegado — ahora **reservado**
-- [x] Prototipo de aura construido y aprobado por Ariana ("va bien")
+- [x] Prototipo de aura construido ("va bien")
 - [x] **Aura promovida a home** (`index.html`); subpágina `aura.html` eliminada → **PR #5**
-- [ ] Distribuir CTAs/enlaces según las **fases del día** (ver backlog) — pendiente próxima sesión
+- [ ] Reubicar CTAs (constelación) + ligarlos al **sistema de cielos/fases** — pendiente próxima sesión
 
 **PR abierto:** #5 — "Aura como home (demo cool)" → falta mergear.
 **URL de producción (Vercel):** `⟶ PENDIENTE: pega aquí la URL del deploy`
@@ -60,22 +64,37 @@ README.md       Doc de instalación/deploy
 
 Prioridad sugerida (ajústala según lo que quieras atacar):
 
-- [ ] **🔴 Botones / CTAs — NO van debajo del wordmark.** Ahora mismo "Join the Academy" y
+- [ ] **🔴 Reubicar los CTAs (constelación) — NO van debajo del wordmark.** Hoy "Join the Academy" y
   "Free yoga on YouTube" están centrados bajo el tagline solo como colocación temporal.
-  **Decisión de Ariana:** se van a **distribuir según las "fases del día"** (concepto por definir
-  la próxima sesión). Rediseñar su ubicación/agrupación con esa lógica antes de dar el home por bueno.
-- [ ] **Sistema de cielos / fases** — el aura cambia según fase del día (ver `PLAN-experiencia-cosmica.md`).
-  Ligar aquí la distribución de los CTAs del punto anterior.
-- [ ] **Foto de Ariana** en el hero — hoy es un placeholder con la forma de arco. Sustituir `.image-slot` por `<img>` real (ver README). *(Necesito la imagen.)*
-- [ ] **Enlaces reales** — YouTube, Instagram, TikTok, Spotify, podcast, WhatsApp community (hoy son `#`).
-- [ ] **CTA "Become a Member" / "Join the Academy"** — conectar a la pasarela de pago o formulario real.
-- [ ] **Testimonios reales** en la sección Stories (hoy son placeholders "A real story, soon").
-- [ ] **SEO/meta** — favicon, imagen Open Graph real, título/descr afinados.
-- [ ] **Dominio propio** en Vercel (si se quiere).
-- [ ] Revisar copy final con Ariana (textos definitivos ES/EN).
+  **La idea original** era colocarlos como **las puntas de una estrella** alrededor del aura, pero
+  **no funciona en móvil**. Quedamos en **experimentar** cómo mostrarlos. Dirección acordada:
+  - **Móvil manda** (tráfico casi todo móvil, ~375px): una estrella radial de 7 nodos **no cabe**.
+    Regla de oro: **dos layouts** — constelación **radial en desktop**, constelación **vertical
+    elegante (apilada)** en móvil. Sigue siendo cósmica, pero apilada.
+  - **Agrupar los nodos en órbitas** (no 7 iguales, aplanan la jerarquía). Ofertas de \$50 a \$4,000
+    con intenciones distintas. Ejemplo de agrupación: *entrada* (Academy, Masterclass, Subliminal,
+    Affirmations) y *premium 1:1* (Coaching, 1-Mo, 4-Mo). Así la constelación tiene lógica.
+  - **Divulgación progresiva (encaja con la idea de hover):** cada nodo muestra solo **ícono +
+    título + precio**; al hacer **hover/focus se "abre"** revelando detalle + CTA. Evita rodear el
+    aura de 7 tarjetas gordas (título, subtítulo, precio, botón) que chocan visualmente.
+  - Los CTAs se quedan como **placeholders**; los links reales se pasan después.
+- [ ] **Sistema de cielos / fases** — el aura/cielo cambia según fase del día (ver `PLAN-experiencia-cosmica.md`).
+  **Va ligado a los botones**: la distribución de la constelación y el cielo van juntos.
+- [ ] **Enlaces reales** — YouTube, Instagram, TikTok, Spotify, podcast, WhatsApp community
+  (hoy son `#` placeholder). *Se pasan después; por ahora se quedan los placeholders.*
+
+### Descartado / fuera de alcance (NO reabrir sin pedirlo)
+- ❌ **Foto de Ariana** — **no se usa**. No hay placeholder de foto pendiente.
+- ❌ **Testimonios reales** — Ariana no los tiene y **no está claro que vayan** con este estilo de
+  web. No implementar sección de testimonios por iniciativa propia.
+- ❌ **Copy / textos "endulzados"** — **no hay copy** y no lo habrá: **solo CTAs, venta pura**, sin
+  relleno narrativo. No inventar frases de marketing.
+- ❌ **SEO/meta** (favicon, Open Graph, títulos) — **no es necesario ahora**, es un demo para pitch.
+- ❌ **Dominio propio** en Vercel — no hace falta; con lo que hay basta.
+- ❌ **EN/ES o toggle de idioma** — el público es **100% EN**; su plataforma actual es solo EN.
+  El sitio va **solo en inglés**.
 
 ### Ideas / mejoras opcionales
-- [ ] Versión en español del contenido (o toggle ES/EN).
 - [ ] Analítica (Vercel Analytics / Plausible).
 - [ ] Sección de agenda/eventos para los lives mensuales.
 
@@ -89,11 +108,15 @@ npx serve .            # o: python3 -m http.server 3000
 # abrir http://localhost:3000
 ```
 
-**Flujo de commits:**
+**Flujo de trabajo (SIEMPRE):** todo va **hacia `main`** mediante un **PR nuevo por cada cambio**.
+Rama de trabajo → commit → push → **PR hacia `main`** para revisar los cambios. Nunca commitear
+directo a `main`.
+
 ```bash
 git add -A
 git commit -m "..."
-git push -u origin claude/cosmicary-demo-setup-fzjsc7
+git push -u origin <rama-de-trabajo>
+# luego abrir PR hacia main
 ```
 Vercel redespliega solo al hacer push (si el repo está conectado).
 
@@ -143,11 +166,41 @@ Vercel redespliega solo al hacer push (si el repo está conectado).
 - **Decisión clave: dos demos** — "cool" (aura, home actual) y "sobrio" (rojo, reservado en git).
   El rojo NO se borra; `styles.css`/`main.js` quedan en el repo para revivirlo luego.
 - Sliders del aura ocultos por defecto; se muestran con `?tune` en la URL.
-- CTAs añadidos temporalmente bajo el tagline **pero Ariana avisa que ahí NO van**: se
-  distribuirán según las "fases del día" (a trabajar en la próxima sesión).
+- CTAs añadidos temporalmente bajo el tagline **pero ahí NO van**: se
+  distribuirán como constelación ligada a las "fases del día" (a trabajar en la próxima sesión).
 - **PR #5** creado. Commit `26e55ab`.
 - Recordatorio de trabajo: hacer **solo lo pedido**, sin crear páginas/extras por iniciativa propia.
-- **Siguiente sesión:** definir concepto de "fases del día" y distribuir los CTAs con esa lógica.
+- **Siguiente sesión:** definir el layout de la constelación de CTAs (radial desktop / apilado móvil)
+  con divulgación progresiva, y ligarlo al sistema de cielos.
+
+### 2026-07-21 — Sesión 5 · Aclaración de alcance del demo
+- **Aclarado que esto es un DEMO para captar a Ariana como cliente** — ella no participa ni aprueba.
+  Corregido `progreso.md` para dejar de atribuirle decisiones.
+- **Dirección de la constelación de CTAs** definida: dos layouts (radial desktop / vertical apilado
+  móvil), nodos agrupados en órbitas (entrada vs premium 1:1), divulgación progresiva en hover/focus
+  (ícono+título+precio → se abre con detalle+CTA).
+- **Podado el backlog:** descartados foto de Ariana, testimonios, copy endulzado, SEO/meta, dominio
+  propio y EN/ES. Enlaces y links de CTA quedan como placeholders hasta que se pasen.
+- Pendiente: implementar la constelación + sistema de cielos.
+
+### 2026-07-21 — Sesión 6 · Constelación de CTAs + fases del día
+- **Reescrito `index.html`** para reubicar los CTAs como **constelación de 7 ofertas** (las del
+  `PLAN`) alrededor del aura, con **sistema de cielos** ligado a cada nodo.
+- **Desktop:** layout radial — órbita interior premium (Coaching/1-Month/4-Month, triángulo
+  apuntando abajo para no pisar el tagline) + exterior entrada (Masterclass/Subliminal/
+  Affirmations/Academy en las esquinas). Líneas de constelación desde el centro. Hover/focus
+  abre el nodo (muestra CTA) y funde el cielo a la fase de esa oferta; el aura vira de tono.
+- **Móvil:** columna vertical con etiquetas "Begin"/"Go deeper"; el cielo **viaja con el scroll**
+  (la tarjeta centrada se activa vía IntersectionObserver).
+- **Sin copy:** cada nodo solo título + precio; al abrir aparece solo el CTA (placeholder `#`).
+- **7 fases** de amanecer→crepúsculo (cada oferta su hora); base sin foco = noche estrellada,
+  que se atenúa según la luz del cielo activo.
+- Verificado en Chromium (1440×900 y 390×844): 7 nodos en pantalla, sin scroll horizontal, sin
+  errores de app, crossfade de cielos y aura OK.
+- Decisiones tomadas (todas del `PLAN`, no inventadas): órbita interior = premium, exterior =
+  entrada; Academy resaltado como flagship; orden por fase = precio ascendente.
+- Pendiente / siguiente: afinar arte de los 7 cielos, links reales cuando se pasen, y decidir si
+  el bloque de identidad lleva "Transformational Mentor".
 
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título

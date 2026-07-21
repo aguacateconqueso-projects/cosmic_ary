@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CosmicAry — Ariana Del Rosario · Transformational Mentor</title>
-<meta name="description" content="Transformational mentor. Rewire your identity. Create your reality — mind, energy, body. Awakening Academy, a transformation & manifestation school.">
+<meta name="description" content="Rewire your identity. Create your reality. Awakening Academy — a transformation & manifestation school by Ariana Del Rosario.">
 <meta property="og:title" content="CosmicAry — Ariana Del Rosario">
 <meta property="og:description" content="Reprogram your mind & create your dream life.">
 <meta property="og:type" content="website">
@@ -19,26 +19,33 @@
     --accent: #C0392B;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; }
+  html, body { margin: 0; min-height: 100%; }
   body {
     background: var(--cosmos);
     color: var(--cream);
     font-family: Inter, system-ui, sans-serif;
-    overflow: hidden;
+    overflow-x: hidden;
   }
 
-  /* stacking: stars < ambient glow < aura < grain < UI */
+  /* ---- layered backdrop ----
+     stars < sky phases < aura < grain < constellation lines < UI */
   #stars, #aura {
     position: fixed; inset: 0; width: 100%; height: 100%;
     pointer-events: none;
   }
-  #stars { z-index: 0; }
-  #aura  { z-index: 2; filter: blur(var(--auraBlur, 12px)); }
+  #stars { z-index: 0; transition: opacity .9s ease; }
+  #aura  { z-index: 3; filter: blur(var(--auraBlur, 12px)); }
+
+  /* full-screen sky layers, one per day-phase, crossfaded by opacity */
+  .sky {
+    position: fixed; inset: 0; z-index: 1; opacity: 0;
+    pointer-events: none; transition: opacity 1.1s ease;
+  }
 
   /* film grain */
   #grain {
     position: fixed; inset: -50%; width: 200%; height: 200%;
-    z-index: 3; pointer-events: none; opacity: .05;
+    z-index: 4; pointer-events: none; opacity: .05;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     mix-blend-mode: overlay;
     animation: grainShift 6s steps(6) infinite;
@@ -48,52 +55,155 @@
     60%{transform:translate(-2%,4%)} 80%{transform:translate(4%,2%)} 100%{transform:translate(0,0)}
   }
 
-  /* hero */
+  /* faint lines from the center to each node (desktop constellation) */
+  #lines { position: fixed; inset: 0; z-index: 4; pointer-events: none; display: none; }
+  #lines line { stroke: rgba(242,237,228,.14); stroke-width: 1; transition: stroke .5s ease; }
+  #lines line.on { stroke: rgba(242,237,228,.4); }
+
+  /* ---- title block ---- */
   .stage {
-    position: fixed; inset: 0; z-index: 4;
+    position: relative; z-index: 5;
+    min-height: 100vh; min-height: 100svh;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; pointer-events: none; padding: 0 24px;
+    text-align: center; padding: 40px 24px; pointer-events: none;
   }
   .eyebrow {
-    margin: 0 0 18px; font-size: 11px; letter-spacing: .34em; text-transform: uppercase;
-    color: rgba(242,237,228,.5);
+    position: fixed; top: 26px; left: 0; right: 0; z-index: 5;
+    margin: 0; font-size: 11px; letter-spacing: .34em; text-transform: uppercase;
+    color: rgba(242,237,228,.55); text-align: center; pointer-events: none;
   }
   .wordmark {
     margin: 0; font-family: Fraunces, serif; font-weight: 400;
-    font-size: clamp(52px, 15vw, 150px); line-height: .9; letter-spacing: -0.025em;
-    color: var(--cream);
-    text-shadow: 0 2px 60px rgba(11,14,26,.7);
+    font-size: clamp(46px, 12vw, 118px); line-height: .9; letter-spacing: -0.025em;
+    color: var(--cream); text-shadow: 0 2px 60px rgba(11,14,26,.75);
   }
   .tagline {
-    margin: 20px 0 0; font-family: Fraunces, serif; text-transform: uppercase;
-    letter-spacing: .2em; font-size: clamp(10px,2.4vw,15px); color: rgba(242,237,228,.7);
+    margin: 18px 0 0; font-family: Fraunces, serif; text-transform: uppercase;
+    letter-spacing: .2em; font-size: clamp(10px,2.2vw,14px); color: rgba(242,237,228,.72);
+    text-shadow: 0 1px 20px rgba(11,14,26,.6);
   }
 
-  /* call to action */
-  .actions {
-    margin-top: 40px; display: flex; align-items: center; gap: 26px;
-    flex-wrap: wrap; justify-content: center; pointer-events: auto;
+  /* ---- constellation of offers ---- */
+  .constellation {
+    position: relative; z-index: 5;
+    width: 100%; max-width: 520px; margin: 30px auto 0;
+    display: flex; flex-direction: column; align-items: stretch; gap: 14px;
+    padding: 0 20px 40px;
   }
-  .btn {
-    font-family: Inter, sans-serif; font-size: 15px; font-weight: 500;
-    padding: 14px 30px; border-radius: 999px; text-decoration: none;
-    transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+
+  .node {
+    pointer-events: auto; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    text-decoration: none; color: var(--cream);
+    padding: 16px 22px; border-radius: 18px;
+    background: rgba(12,14,26,.5); backdrop-filter: blur(8px);
+    border: 1px solid rgba(242,237,228,.12);
+    transition: transform .3s ease, background .3s ease, border-color .3s ease, box-shadow .3s ease;
   }
-  .btn--primary {
-    background: var(--accent); color: var(--cream);
-    box-shadow: 0 8px 30px rgba(192,57,43,.35);
+  .node__dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--cream);
+    box-shadow: 0 0 10px 2px rgba(242,237,228,.55);
+    transition: box-shadow .3s ease, transform .3s ease;
   }
-  .btn--primary:hover { transform: translateY(-2px); box-shadow: 0 12px 38px rgba(192,57,43,.5); }
-  .link-underline {
-    color: rgba(242,237,228,.85); text-decoration: none; font-size: 15px;
-    border-bottom: 1px solid rgba(242,237,228,.4); padding-bottom: 3px;
+  .node__title {
+    font-family: Fraunces, serif; font-size: 17px; letter-spacing: .01em;
+  }
+  .node__price {
+    font-size: 13px; color: rgba(242,237,228,.72); font-variant-numeric: tabular-nums;
+    letter-spacing: .04em;
+  }
+  .node__cta {
+    margin-top: 4px; display: inline-flex; align-items: center; gap: 7px;
+    font-size: 13px; font-weight: 500; letter-spacing: .02em;
+    color: var(--cream); background: var(--accent);
+    padding: 9px 18px; border-radius: 999px;
+    max-height: 0; opacity: 0; transform: translateY(4px);
+    overflow: hidden; transition: max-height .35s ease, opacity .3s ease, transform .3s ease, margin .35s ease;
+    box-shadow: 0 6px 22px rgba(192,57,43,.35);
+  }
+  .node__cta svg { width: 13px; height: 13px; }
+
+  /* flagship gets a subtle luminous ring */
+  .node--flagship {
+    border-color: rgba(192,57,43,.45);
+    box-shadow: 0 0 0 1px rgba(192,57,43,.25), 0 10px 40px rgba(11,14,26,.4);
+  }
+  .node--flagship .node__dot { background: #F6C7BE; box-shadow: 0 0 12px 3px rgba(192,57,43,.6); }
+
+  /* active state — hover / focus / centered-on-scroll */
+  .node.is-active, .node:hover, .node:focus-within {
+    transform: translateY(-3px) scale(1.03);
+    background: rgba(20,22,34,.62);
+    border-color: rgba(242,237,228,.28);
+    outline: none;
+  }
+  .node.is-active .node__dot, .node:hover .node__dot, .node:focus-within .node__dot {
+    transform: scale(1.25);
+    box-shadow: 0 0 16px 4px rgba(242,237,228,.75);
+  }
+  .node.is-active .node__cta, .node:hover .node__cta, .node:focus-within .node__cta {
+    max-height: 54px; opacity: 1; transform: none; margin-top: 8px;
+  }
+  .node:focus-visible { outline: 2px solid rgba(242,237,228,.7); outline-offset: 3px; }
+
+  /* group hint labels (only shown on mobile stack) */
+  .orbit-label {
+    font-size: 10px; letter-spacing: .3em; text-transform: uppercase;
+    color: rgba(242,237,228,.4); text-align: center; margin: 8px 0 2px;
+  }
+
+  /* ---- desktop: radial constellation around the aura ---- */
+  @media (min-width: 820px) {
+    .stage { min-height: 100vh; }
+    .constellation {
+      position: fixed; inset: 0; max-width: none; margin: 0; padding: 0;
+      z-index: 5; pointer-events: none;
+    }
+    .orbit-label { display: none; }
+    .node {
+      position: absolute; width: 168px;
+      left: var(--x, 50%); top: var(--y, 50%);
+      transform: translate(-50%, -50%);
+      transform-origin: center;
+    }
+    .node.is-active, .node:hover, .node:focus-within {
+      transform: translate(-50%, -50%) scale(1.05);
+      z-index: 6;
+    }
+    #lines { display: block; }
+  }
+
+  /* ---- identity strip ---- */
+  .identity {
+    position: relative; z-index: 5;
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    padding: 30px 20px 46px; text-align: center;
+  }
+  .identity__free {
+    pointer-events: auto; color: rgba(242,237,228,.85); text-decoration: none;
+    font-size: 14px; border-bottom: 1px solid rgba(242,237,228,.4); padding-bottom: 3px;
     transition: color .25s ease, border-color .25s ease;
   }
-  .link-underline:hover { color: var(--cream); border-color: var(--cream); }
+  .identity__free:hover { color: var(--cream); border-color: var(--cream); }
+  .identity__social { display: flex; gap: 20px; }
+  .identity__social a {
+    pointer-events: auto; color: rgba(242,237,228,.6); text-decoration: none;
+    font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    transition: color .25s ease;
+  }
+  .identity__social a:hover { color: var(--cream); }
 
-  /* controls — hidden unless the URL ends in ?tune */
+  @media (min-width: 820px) {
+    .identity {
+      position: fixed; left: 0; right: 0; bottom: 20px; padding: 0;
+      z-index: 5; pointer-events: none;
+    }
+  }
+
+  /* controls — hidden unless the URL contains ?tune */
   .panel {
-    position: fixed; top: 14px; right: 14px; z-index: 6;
+    position: fixed; top: 14px; right: 14px; z-index: 8;
     width: 236px; padding: 16px 16px 8px; border-radius: 14px;
     background: rgba(20,22,34,.72); backdrop-filter: blur(10px);
     border: 1px solid rgba(242,237,228,.12);
@@ -109,21 +219,33 @@
 
   @media (prefers-reduced-motion: reduce) {
     #grain { animation: none; }
+    .sky { transition: opacity .4s ease; }
   }
 </style>
 </head>
 <body>
   <canvas id="stars" aria-hidden="true"></canvas>
+  <div id="sky-layers" aria-hidden="true"></div>
   <canvas id="aura" aria-hidden="true"></canvas>
   <div id="grain" aria-hidden="true"></div>
+  <svg id="lines" aria-hidden="true"></svg>
+
+  <p class="eyebrow">Ariana Del Rosario</p>
 
   <div class="stage">
-    <p class="eyebrow">Ariana Del Rosario</p>
     <h1 class="wordmark">CosmicAry</h1>
     <p class="tagline">Reprogram your mind &amp; create your dream life</p>
-    <div class="actions">
-      <a href="#" class="btn btn--primary">Join the Academy</a>
-      <a href="#" class="link-underline">Free yoga on YouTube</a>
+  </div>
+
+  <nav class="constellation" id="constellation" aria-label="Offerings"></nav>
+
+  <div class="identity">
+    <a href="#" class="identity__free">Free yoga on YouTube</a>
+    <div class="identity__social">
+      <a href="#">Instagram</a>
+      <a href="#">TikTok</a>
+      <a href="#">Spotify</a>
+      <a href="#">Podcast</a>
     </div>
   </div>
 
@@ -143,28 +265,190 @@
 (function () {
   'use strict';
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var mqDesktop = matchMedia('(min-width: 820px)');
   if (/[?&]tune\b/.test(location.search)) document.body.classList.add('tune');
 
-  // ---- palette (luminous, additive over the night) ----
-  var WARM = [239, 116, 148];   // rose
-  var COOL = [116, 140, 240];   // periwinkle
+  // ============================================================
+  //  OFFERS  (from PLAN-experiencia-cosmica.md — do not invent copy)
+  //  Two orbits: premium 1:1 (inner) + entrada (outer). No subtitles.
+  //  Each offer maps to a day-phase (dawn -> twilight).
+  // ============================================================
+  var OFFERS = [
+    // premium 1:1 — inner ring
+    { id:'coaching',     orbit:'premium', title:'1:1 Coaching',        price:'$400',    cta:'Book',   phase:4 },
+    { id:'mentor1',      orbit:'premium', title:'1-Month Mentorship',  price:'$1,100',  cta:'Book',   phase:5 },
+    { id:'mentor4',      orbit:'premium', title:'4-Month Mentorship',  price:'$4,000',  cta:'Book',   phase:6 },
+    // entrada — outer ring
+    { id:'masterclass',  orbit:'entrada', title:'Purpose Masterclass', price:'$50',     cta:'Watch',  phase:0 },
+    { id:'subliminal',   orbit:'entrada', title:'Personalized Subliminal', price:'$75', cta:'Get',    phase:1 },
+    { id:'affirmations', orbit:'entrada', title:'Personalized Affirmations', price:'$100', cta:'Get',  phase:2 },
+    { id:'academy',      orbit:'entrada', title:'Awakening Academy',   price:'$100/mo', cta:'Join',   phase:3, flagship:true }
+  ];
+
+  // ---- day-phase palette: sky gradient + aura tint pair + how much it hides stars
+  var PHASES = [
+    { sky:'linear-gradient(180deg,#141033 0%,#3a2350 45%,#8a4a63 80%,#c46e78 100%)', warm:[239,120,150], cool:[150,120,220], hide:0.55 }, // 0 dawn
+    { sky:'linear-gradient(180deg,#14203c 0%,#33456b 45%,#7a6a7e 78%,#d39a86 100%)', warm:[240,150,120], cool:[130,160,240], hide:0.68 }, // 1 first light
+    { sky:'linear-gradient(180deg,#1b2444 0%,#4a4a72 45%,#8f6f7a 78%,#e0b184 100%)', warm:[240,180,120], cool:[200,150,210], hide:0.78 }, // 2 warm morning
+    { sky:'linear-gradient(180deg,#243456 0%,#4f6f9a 45%,#9fb0c0 78%,#efd6a8 100%)', warm:[255,220,150], cool:[150,190,240], hide:0.90 }, // 3 zenith (academy)
+    { sky:'linear-gradient(180deg,#241a38 0%,#5a2f48 42%,#a5544c 75%,#e0954e 100%)', warm:[245,160,90],  cool:[220,120,150], hide:0.55 }, // 4 golden hour
+    { sky:'linear-gradient(180deg,#24152e 0%,#5a244a 42%,#a83a5c 75%,#d86a5e 100%)', warm:[240,110,90],  cool:[200,80,140],  hide:0.50 }, // 5 deep sunset
+    { sky:'linear-gradient(180deg,#160f2c 0%,#33184e 45%,#5a2a72 78%,#8a4a86 100%)', warm:[200,120,220], cool:[120,110,230], hide:0.38 }  // 6 twilight
+  ];
+
+  var BASE_WARM = [239,116,148], BASE_COOL = [116,140,240];   // night default
+
+  // ---- build sky layer DOM
+  var skyWrap = document.getElementById('sky-layers');
+  var skyEls = PHASES.map(function (p) {
+    var d = document.createElement('div');
+    d.className = 'sky'; d.style.background = p.sky;
+    skyWrap.appendChild(d);
+    return d;
+  });
+
+  // ---- build offer nodes
+  var ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  var wrap = document.getElementById('constellation');
+  var nodeEls = [];
+
+  function addLabel(text) {
+    var l = document.createElement('p'); l.className = 'orbit-label'; l.textContent = text;
+    wrap.appendChild(l);
+  }
+  // mobile stack order: entrada first (start here) then premium (go deeper)
+  var stackOrder = OFFERS.slice().sort(function (a, b) {
+    var rank = { entrada:0, premium:1 };
+    if (rank[a.orbit] !== rank[b.orbit]) return rank[a.orbit] - rank[b.orbit];
+    return a.phase - b.phase;
+  });
+  var lastOrbit = null;
+  stackOrder.forEach(function (o) {
+    if (o.orbit !== lastOrbit) {
+      addLabel(o.orbit === 'entrada' ? 'Begin' : 'Go deeper');
+      lastOrbit = o.orbit;
+    }
+    var a = document.createElement('a');
+    a.className = 'node' + (o.flagship ? ' node--flagship' : '');
+    a.href = '#'; a.setAttribute('data-phase', o.phase);
+    a.setAttribute('aria-label', o.title + ', ' + o.price);
+    a.innerHTML =
+      '<span class="node__dot"></span>' +
+      '<span class="node__title">' + o.title + '</span>' +
+      '<span class="node__price">' + o.price + '</span>' +
+      '<span class="node__cta">' + o.cta + ' ' + ARROW + '</span>';
+    wrap.appendChild(a);
+    nodeEls.push(a);
+    o._el = a;
+  });
+
+  // ============================================================
+  //  ACTIVE PHASE  (drives sky + aura tint + node bloom)
+  // ============================================================
+  var activeIdx = -1;              // index into PHASES, -1 = night
+  var targetWarm = BASE_WARM.slice(), targetCool = BASE_COOL.slice();
+  var starsEl = document.getElementById('stars');
+
+  function setPhase(phaseIdx, node) {
+    activeIdx = (phaseIdx == null) ? -1 : phaseIdx;
+    skyEls.forEach(function (el, i) { el.style.opacity = (i === activeIdx) ? 1 : 0; });
+    nodeEls.forEach(function (el) { el.classList.toggle('is-active', el === node); });
+    if (activeIdx === -1) {
+      targetWarm = BASE_WARM.slice(); targetCool = BASE_COOL.slice();
+      starsEl.style.opacity = 1;
+    } else {
+      var p = PHASES[activeIdx];
+      targetWarm = p.warm.slice(); targetCool = p.cool.slice();
+      starsEl.style.opacity = (1 - p.hide).toFixed(2);
+    }
+    highlightLine(node);
+  }
+
+  // hover / focus (desktop)  ·  tap (both)
+  nodeEls.forEach(function (el) {
+    var ph = parseInt(el.getAttribute('data-phase'), 10);
+    el.addEventListener('mouseenter', function () { if (mqDesktop.matches) setPhase(ph, el); });
+    el.addEventListener('mouseleave', function () { if (mqDesktop.matches) setPhase(null, null); });
+    el.addEventListener('focus',      function () { setPhase(ph, el); });
+    el.addEventListener('blur',       function () { if (mqDesktop.matches) setPhase(null, null); });
+    el.addEventListener('click', function (e) { e.preventDefault(); setPhase(ph, el); }); // placeholder links
+  });
+
+  // mobile: the card crossing the screen's middle band becomes active (sky travels with scroll)
+  var io = new IntersectionObserver(function (entries) {
+    if (mqDesktop.matches) return;
+    entries.forEach(function (en) {
+      if (en.isIntersecting) {
+        var ph = parseInt(en.target.getAttribute('data-phase'), 10);
+        setPhase(ph, en.target);
+      }
+    });
+  }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+  nodeEls.forEach(function (el) { io.observe(el); });
+
+  mqDesktop.addEventListener && mqDesktop.addEventListener('change', function () {
+    setPhase(null, null); layoutRadial();
+  });
+
+  // ============================================================
+  //  RADIAL LAYOUT (desktop) + constellation lines
+  // ============================================================
+  var lines = document.getElementById('lines');
+  var lineEls = nodeEls.map(function () {
+    var ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    lines.appendChild(ln); return ln;
+  });
+
+  // angles (deg) per orbit — inner triangle points DOWN (keeps the tagline
+  // band clear: one node bottom-centre, two on the upper flanks above the
+  // wordmark), outer entrada square sits at the four corners.
+  var innerAng = [90, 210, 330];              // premium (3): bottom, upper-left, upper-right
+  var outerAng = [-45, 45, 135, 225];         // entrada (4): corners
+
+  function layoutRadial() {
+    if (!mqDesktop.matches) return;
+    var W = innerWidth, H = innerHeight, cx = W / 2, cy = H / 2;
+    var maxRx = W / 2 - 130, maxRy = H / 2 - 96;
+    var inner = { rx: maxRx * 0.58, ry: maxRy * 0.58 };
+    var outer = { rx: maxRx * 1.0,  ry: maxRy * 1.0 };
+    var ip = 0, op = 0;
+    OFFERS.forEach(function (o, idx) {
+      var ring = o.orbit === 'premium' ? inner : outer;
+      var ang = (o.orbit === 'premium' ? innerAng[ip++] : outerAng[op++]) * Math.PI / 180;
+      var x = cx + ring.rx * Math.cos(ang);
+      var y = cy + ring.ry * Math.sin(ang);
+      o._el.style.setProperty('--x', x + 'px');
+      o._el.style.setProperty('--y', y + 'px');
+      var ln = lineEls[idx];
+      ln.setAttribute('x1', cx); ln.setAttribute('y1', cy);
+      ln.setAttribute('x2', x);  ln.setAttribute('y2', y);
+      o._el._lx = x; o._el._ly = y;
+    });
+  }
+  function highlightLine(node) {
+    OFFERS.forEach(function (o, idx) { lineEls[idx].classList.toggle('on', o._el === node); });
+  }
+
+  // ============================================================
+  //  AURA + STARS ENGINE
+  // ============================================================
+  var P = { petals:18, breathe:0.28, spin:0.35, drift:0.5, blur:12, scale:1, glow:0.9 };
+  var curWarm = BASE_WARM.slice(), curCool = BASE_COOL.slice();
+
   function lerp(a, b, t) { return a + (b - a) * t; }
   function mixCol(t) { return [
-    Math.round(lerp(WARM[0], COOL[0], t)),
-    Math.round(lerp(WARM[1], COOL[1], t)),
-    Math.round(lerp(WARM[2], COOL[2], t))
+    Math.round(lerp(curWarm[0], curCool[0], t)),
+    Math.round(lerp(curWarm[1], curCool[1], t)),
+    Math.round(lerp(curWarm[2], curCool[2], t))
   ]; }
   function smoothstep(t){ t=Math.max(0,Math.min(1,t)); return t*t*(3-2*t); }
 
-  // ---- params (bound to sliders) ----
-  var P = { petals:18, breathe:0.28, spin:0.35, drift:0.5, blur:12, scale:1, glow:0.9 };
-
-  // ---- stars (faint base) ----
-  var starsC = document.getElementById('stars'), sctx = starsC.getContext('2d');
+  // stars
+  var sctx = starsEl.getContext('2d');
   function mulberry32(a){return function(){a|=0;a=(a+0x6D2B79F5)|0;var t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
   function drawStars(){
     var dpr=Math.min(devicePixelRatio||1,2), w=innerWidth, h=innerHeight;
-    starsC.width=w*dpr; starsC.height=h*dpr; starsC.style.width=w+'px'; starsC.style.height=h+'px';
+    starsEl.width=w*dpr; starsEl.height=h*dpr; starsEl.style.width=w+'px'; starsEl.style.height=h+'px';
     sctx.setTransform(dpr,0,0,dpr,0,0); sctx.clearRect(0,0,w,h);
     var count=Math.round(90*w*h/700000), rand=mulberry32(7);
     for(var i=0;i<count;i++){
@@ -174,20 +458,22 @@
     }
   }
 
-  // ---- aura ----
+  // aura
   var auraC = document.getElementById('aura'), actx = auraC.getContext('2d');
   var W=0, H=0, DPR=1;
   function resize(){
     DPR=Math.min(devicePixelRatio||1,2); W=innerWidth; H=innerHeight;
     auraC.width=W*DPR; auraC.height=H*DPR; auraC.style.width=W+'px'; auraC.style.height=H+'px';
-    drawStars();
+    lines.setAttribute('viewBox','0 0 '+W+' '+H);
+    lines.setAttribute('width', W); lines.setAttribute('height', H);
+    drawStars(); layoutRadial();
   }
 
   function petal(cx, cy, ang, r0, len, wid, rgb, alpha){
     actx.save();
     actx.translate(cx, cy);
     actx.rotate(ang);
-    actx.translate(r0, 0);           // start from an inner ring, not the dead center
+    actx.translate(r0, 0);
     var span = len - r0;
     var g = actx.createLinearGradient(0,0, span,0);
     var c = rgb[0]+','+rgb[1]+','+rgb[2];
@@ -207,6 +493,12 @@
 
   function frame(now){
     var t = now * 0.001;
+    // ease aura tint toward the active phase (or night default)
+    for (var k=0;k<3;k++){
+      curWarm[k] += (targetWarm[k]-curWarm[k]) * 0.05;
+      curCool[k] += (targetCool[k]-curCool[k]) * 0.05;
+    }
+
     actx.setTransform(DPR,0,0,DPR,0,0);
     actx.clearRect(0,0,W,H);
     actx.globalCompositeOperation = 'lighter';
@@ -215,18 +507,15 @@
     var base = Math.min(W,H) * 0.34 * P.scale;
     var N = P.petals;
     var globalSpin = reduce ? 0 : t * P.spin * 0.12;
-    // color balance drifts warm<->cool over ~18s
     var balance = reduce ? 0.5 : (Math.sin(t * 0.34) * 0.5 + 0.5) * P.drift + (1-P.drift)*0.5;
 
-    // soft ambient halo (subtle, keeps petals readable)
     var amb = mixCol(balance);
     var ag = actx.createRadialGradient(cx,cy,base*0.1, cx,cy, base*1.5);
     ag.addColorStop(0, 'rgba('+amb[0]+','+amb[1]+','+amb[2]+','+(0.10*P.glow).toFixed(3)+')');
     ag.addColorStop(1, 'rgba('+amb[0]+','+amb[1]+','+amb[2]+',0)');
     actx.fillStyle = ag; actx.beginPath(); actx.arc(cx,cy,base*1.5,0,7); actx.fill();
 
-    var r0 = base * 0.10;   // inner ring petals radiate from
-    // two rings of petals, with alternating long/short lobes for a spiky bloom
+    var r0 = base * 0.10;
     for (var ring=0; ring<2; ring++){
       var ringLen = base * (ring===0 ? 1.0 : 0.70);
       var ringWid = base * (ring===0 ? 0.16 : 0.20);
@@ -234,7 +523,7 @@
       for (var i=0;i<N;i++){
         var a = (i/N)*Math.PI*2 + offset + globalSpin + (ring? -globalSpin*0.6:0);
         var wob = reduce ? 0 : Math.sin(t*0.7 + i*1.3 + ring)*0.06;
-        var alt = (i % 2 === 0) ? 1 : 0.68;    // alternating lobe length
+        var alt = (i % 2 === 0) ? 1 : 0.68;
         var breathe = reduce ? 1 : (1 + P.breathe*Math.sin(t*0.9 + i*(6.28/N)*2 + ring*1.6));
         var len = ringLen * alt * breathe;
         var localMix = smoothstep(balance + 0.6*Math.sin((i/N)*Math.PI*2 + t*0.25 + ring));
@@ -244,7 +533,6 @@
       }
     }
 
-    // gentle core (not a white blob)
     var core = mixCol(balance);
     var cg = actx.createRadialGradient(cx,cy,0, cx,cy, base*0.32);
     cg.addColorStop(0, 'rgba(255,236,242,'+(0.28*P.glow).toFixed(3)+')');
@@ -260,7 +548,7 @@
   function bind(id, key, fmt){
     var el=document.getElementById(id), out=document.getElementById('v'+id.charAt(0).toUpperCase()+id.slice(1));
     function upd(){ P[key]=parseFloat(el.value); if(out) out.textContent=fmt?fmt(P[key]):P[key];
-      if(key==='blur') document.getElementById('aura').style.setProperty('--auraBlur', P.blur+'px'); }
+      if(key==='blur') auraC.style.setProperty('--auraBlur', P.blur+'px'); }
     el.addEventListener('input', upd); upd();
   }
   bind('petals','petals'); bind('breathe','breathe',function(v){return v.toFixed(2);});
@@ -272,7 +560,7 @@
   var raf;
   addEventListener('resize', resize);
   resize();
-  if (reduce) { requestAnimationFrame(frame); }   // one static paint
+  if (reduce) { requestAnimationFrame(frame); }
   else { raf = requestAnimationFrame(frame); }
   document.addEventListener('visibilitychange', function(){
     if(document.hidden){ cancelAnimationFrame(raf); } else if(!reduce){ raf=requestAnimationFrame(frame); }
