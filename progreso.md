@@ -340,6 +340,19 @@ Vercel redespliega solo al hacer push/merge (si el repo está conectado).
 - Verificado en Chromium (1440×900): `finish` dispara con el card ya en 168px (= nodo); los dos frames
   del handoff (ghost vs nodo) son idénticos en contenido, tamaño y borde. Sin errores de app.
 
+### 2026-07-21 — Sesión 14 · Crossfade de texto sin salto de tamaño
+- **Feedback:** el único salto que quedaba era el **tamaño del texto**. Causa: el ghost (texto chico,
+  centrado) hacía fade-in **de inmediato al cerrar**, así que aparecía en el **centro del panel aún
+  grande**, encima del texto grande → se percibía como que el texto saltaba de tamaño.
+- **Fix (crossfade desacoplado por dirección con delays):**
+  - CLOSE: el contenido grande se desvanece **rápido y temprano** (mientras la caja aún es grande) y el
+    ghost chico hace fade-in **tarde** (delay .3s), sólo cuando la caja ya encogió al tamaño del nodo.
+  - OPEN: el ghost se va **rápido** (.15s) y el contenido entra con un **delay corto** (.15s) a medida
+    que la caja se abre — sin hueco vacío ni choque de tamaños.
+  - Así el texto grande y el chico **nunca coexisten** a tamaños distintos en la misma caja.
+- Verificado en Chromium (1440×900) con filmstrips de open y close: no hay texto chico flotando sobre el
+  panel grande, ni panel vacío; el cierre lee panel→(se desvanece)→encoge→etiqueta del nodo. Sin errores.
+
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
 - Qué se hizo
