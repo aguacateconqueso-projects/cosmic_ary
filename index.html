@@ -252,6 +252,129 @@
     }
   }
 
+  /* ============================================================
+     Awakening Academy — expanded modal
+     Click the flagship node -> the card grows and glides to the
+     centre (FLIP), over a glass backdrop so the moving star stays
+     visible but the copy is fully legible.
+     ============================================================ */
+  .amodal {
+    position: fixed; inset: 0; z-index: 30;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    opacity: 0; visibility: hidden;
+    transition: opacity .5s ease, visibility .5s ease;
+  }
+  .amodal.is-open { opacity: 1; visibility: visible; }
+  .amodal__backdrop {
+    position: absolute; inset: 0;
+    background: rgba(8,10,20,.42);
+    -webkit-backdrop-filter: blur(7px) saturate(1.1);
+    backdrop-filter: blur(7px) saturate(1.1);
+  }
+  .amodal__card {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 560px; max-height: 88vh;
+    border-radius: 26px; overflow: hidden;
+    background: linear-gradient(180deg, rgba(20,22,38,.80), rgba(12,14,26,.86));
+    -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px);
+    border: 1px solid rgba(242,237,228,.16);
+    box-shadow: 0 30px 90px rgba(0,0,0,.55), 0 0 0 1px rgba(192,57,43,.18),
+                inset 0 1px 0 rgba(242,237,228,.06);
+    transform-origin: center center; will-change: transform, opacity;
+  }
+  .amodal__scroll {
+    max-height: 88vh; overflow-y: auto;
+    padding: 42px 38px 34px; -webkit-overflow-scrolling: touch;
+  }
+  .amodal__scroll::-webkit-scrollbar { width: 8px; }
+  .amodal__scroll::-webkit-scrollbar-thumb { background: rgba(242,237,228,.18); border-radius: 8px; }
+  .amodal__scroll::-webkit-scrollbar-track { background: transparent; }
+
+  .amodal__close {
+    position: absolute; top: 14px; right: 14px; z-index: 3;
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(12,14,26,.55); color: rgba(242,237,228,.85);
+    border: 1px solid rgba(242,237,228,.18);
+    font-size: 22px; line-height: 1; cursor: pointer;
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    transition: background .25s ease, color .25s ease, transform .35s ease, border-color .25s ease;
+  }
+  .amodal__close:hover {
+    background: rgba(192,57,43,.5); color: #fff;
+    border-color: rgba(192,57,43,.6); transform: rotate(90deg);
+  }
+  .amodal__close:focus-visible { outline: 2px solid rgba(242,237,228,.7); outline-offset: 2px; }
+
+  .amodal__eyebrow {
+    margin: 0; font-family: Jost, sans-serif; font-weight: 500;
+    font-size: 11px; letter-spacing: .34em; text-transform: uppercase;
+    color: rgba(246,199,190,.9);
+  }
+  .amodal__title {
+    margin: 10px 0 2px; font-family: Fraunces, serif; font-weight: 400;
+    font-size: clamp(30px, 6vw, 42px); line-height: 1; letter-spacing: -.01em;
+    color: var(--cream);
+  }
+  .amodal__price {
+    margin: 0 0 22px; font-family: Fraunces, serif; font-size: 21px;
+    color: rgba(246,199,190,.95);
+  }
+  .amodal p {
+    font-family: Jost, sans-serif; font-weight: 300; line-height: 1.62;
+    color: rgba(242,237,228,.82); font-size: 15px; margin: 0 0 14px;
+  }
+  .amodal p:last-of-type { margin-bottom: 0; }
+  .amodal strong { color: var(--cream); font-weight: 500; }
+  .amodal__lead { font-size: 16px; color: rgba(242,237,228,.92); }
+  .amodal__section-title {
+    margin: 26px 0 12px; font-family: Jost, sans-serif; font-weight: 500;
+    font-size: 12px; letter-spacing: .26em; text-transform: uppercase;
+    color: rgba(242,237,228,.72);
+  }
+  .amodal__list { list-style: none; margin: 0; padding: 0; }
+  .amodal__list li {
+    position: relative; padding: 9px 0 9px 30px;
+    font-family: Jost, sans-serif; font-weight: 300; font-size: 14.5px; line-height: 1.5;
+    color: rgba(242,237,228,.86);
+    border-bottom: 1px solid rgba(242,237,228,.07);
+  }
+  .amodal__list li::before {
+    content: '✦'; position: absolute; left: 4px; top: 10px;
+    color: rgba(246,199,190,.85); font-size: 12px;
+  }
+  .amodal__hr { height: 1px; background: rgba(242,237,228,.1); border: 0; margin: 24px 0; }
+
+  .amodal__join {
+    display: block; text-align: center; text-decoration: none;
+    margin-top: 28px; padding: 17px 24px; border-radius: 999px;
+    font-family: Jost, sans-serif; font-weight: 600; font-size: 14px;
+    letter-spacing: .2em; text-transform: uppercase; color: #fff;
+    background: linear-gradient(120deg, #8B1A1A, #C0392B 50%, #9E2422);
+    background-size: 200% 100%; background-position: 0 0;
+    box-shadow: 0 14px 40px rgba(192,57,43,.4);
+    position: relative; overflow: hidden;
+    transition: transform .3s ease, box-shadow .3s ease, background-position .6s ease;
+  }
+  .amodal__join:hover {
+    transform: translateY(-2px) scale(1.015);
+    box-shadow: 0 18px 54px rgba(192,57,43,.55); background-position: 100% 0;
+  }
+  .amodal__join:focus-visible { outline: 2px solid rgba(242,237,228,.8); outline-offset: 3px; }
+  .amodal__join::after {
+    content: ''; position: absolute; top: 0; left: -60%; width: 42%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent);
+    transform: skewX(-18deg); animation: joinShine 3.8s ease-in-out infinite;
+  }
+  @keyframes joinShine { 0%, 100% { left: -60%; } 55% { left: 132%; } }
+
+  @media (max-width: 520px) {
+    .amodal { padding: 0; }
+    .amodal__card { max-width: none; max-height: 100vh; max-height: 100svh; border-radius: 0; }
+    .amodal__scroll { max-height: 100vh; max-height: 100svh; padding: 60px 24px 40px; }
+  }
+
   /* controls — hidden unless the URL contains ?tune */
   .panel {
     position: fixed; top: 14px; right: 14px; z-index: 8;
@@ -272,6 +395,8 @@
     #grain { animation: none; }
     .sky { transition: opacity .4s ease; }
     .node.is-active::before, .node:hover::before, .node:focus-within::before { animation: none; }
+    .amodal__join::after { animation: none; }
+    .amodal__close:hover { transform: none; }
   }
 </style>
 </head>
@@ -300,6 +425,58 @@
       <a href="#">TikTok</a>
       <a href="#">Spotify</a>
       <a href="#">Podcast</a>
+    </div>
+  </div>
+
+  <!-- Awakening Academy — expanded modal (opens from the flagship node) -->
+  <div class="amodal" id="academyModal" aria-hidden="true">
+    <div class="amodal__backdrop" data-close></div>
+    <div class="amodal__card" role="dialog" aria-modal="true" aria-labelledby="amodalTitle">
+      <button class="amodal__close" id="amodalClose" type="button" aria-label="Close">&times;</button>
+      <div class="amodal__scroll" tabindex="-1">
+        <p class="amodal__eyebrow">Awakening</p>
+        <h2 class="amodal__title" id="amodalTitle">Academy</h2>
+        <p class="amodal__price">$100 / Month</p>
+
+        <p class="amodal__lead">You're not stuck because you're incapable.<br>
+          You're stuck because no one taught you how to truly change.</p>
+
+        <p>This space is about shifting your identity, your patterns, and the way you relate to
+          reality — so you stop operating from fear, doubt, and old conditioning, and start
+          creating your life from clarity, trust, and alignment.</p>
+
+        <p><strong>When you change internally, your reality changes too.</strong></p>
+
+        <p class="amodal__section-title">✨ What's included</p>
+        <ul class="amodal__list">
+          <li>Monthly membership — join or cancel whenever 🖤</li>
+          <li>Full self-paced course</li>
+          <li>Lessons unlock progressively, but you move through everything at your own rhythm</li>
+          <li>You're not "behind" if you join later — the academy was intentionally designed for people to join at any time</li>
+          <li>Bi-weekly live group mentorship calls with me (we meet live every 2nd &amp; 4th Saturday of the month at 1 PM Brazil time)</li>
+          <li>Full access to all call replays (uploaded into the portal so you can watch anytime)</li>
+          <li>Private WhatsApp community with regular voice notes, support, and guidance from me</li>
+          <li>Exclusive guided meditations, subliminals, visualizations &amp; reprogramming audios</li>
+          <li>Yoga and conscious movement practices</li>
+        </ul>
+
+        <hr class="amodal__hr">
+
+        <p>Inside the academy, we work on dissolving limiting beliefs, emotional wounds,
+          subconscious blocks, and unconscious patterns — so manifestation stops feeling like
+          force, chasing, or "trying harder."</p>
+
+        <p>You learn how to move from autopilot into conscious creation.</p>
+
+        <p>This isn't just content to consume.<br>
+          It's a space for real transformation, support, and integration.</p>
+
+        <p>This is my private inner circle — where I guide you, support you, and give you the
+          tools to genuinely change your life.</p>
+
+        <!-- TODO: replace href="#" with the real payment link when provided -->
+        <a class="amodal__join" id="amodalJoin" href="#" rel="noopener">Become a Member</a>
+      </div>
     </div>
   </div>
 
@@ -381,7 +558,7 @@
     }
     var a = document.createElement('a');
     a.className = 'node' + (o.flagship ? ' node--flagship' : '');
-    a.href = '#'; a.setAttribute('data-phase', o.phase);
+    a.href = '#'; a.setAttribute('data-phase', o.phase); a.setAttribute('data-id', o.id);
     a.setAttribute('aria-label', o.title + ', ' + o.price);
     a.innerHTML =
       '<span class="node__dot"></span>' +
@@ -422,7 +599,95 @@
     el.addEventListener('mouseleave', function () { if (mqDesktop.matches) setPhase(null, null); });
     el.addEventListener('focus',      function () { setPhase(ph, el); });
     el.addEventListener('blur',       function () { if (mqDesktop.matches) setPhase(null, null); });
-    el.addEventListener('click', function (e) { e.preventDefault(); setPhase(ph, el); }); // placeholder links
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      setPhase(ph, el);
+      if (el.getAttribute('data-id') === 'academy') openAcademy(el);   // flagship -> expand
+    });
+  });
+
+  // ============================================================
+  //  AWAKENING ACADEMY MODAL — the flagship node grows and glides
+  //  to the centre (FLIP), over a glass backdrop. Esc / X / backdrop
+  //  close; focus returns to the node that opened it.
+  // ============================================================
+  var amodal = document.getElementById('academyModal');
+  var amCard = amodal.querySelector('.amodal__card');
+  var amScroll = amodal.querySelector('.amodal__scroll');
+  var amClose = document.getElementById('amodalClose');
+  var amJoin = document.getElementById('amodalJoin');
+  var openerNode = null, amCloseTimer = null;
+
+  function flip(fromRect, toRect) {
+    var dx = (fromRect.left + fromRect.width / 2) - (toRect.left + toRect.width / 2);
+    var dy = (fromRect.top + fromRect.height / 2) - (toRect.top + toRect.height / 2);
+    var sx = Math.max(fromRect.width / toRect.width, 0.05);
+    var sy = Math.max(fromRect.height / toRect.height, 0.05);
+    return 'translate(' + dx + 'px,' + dy + 'px) scale(' + sx + ',' + sy + ')';
+  }
+
+  function openAcademy(node) {
+    openerNode = node || null;
+    clearTimeout(amCloseTimer);
+    amodal.classList.add('is-open');
+    amodal.setAttribute('aria-hidden', 'false');
+    document.documentElement.style.overflow = 'hidden';
+    amScroll.scrollTop = 0;
+
+    if (!reduce && node) {
+      var nr = node.getBoundingClientRect();
+      var cr = amCard.getBoundingClientRect();
+      amCard.style.transition = 'none';
+      amCard.style.opacity = '0.35';
+      amCard.style.transform = flip(nr, cr);
+      // next frame: release to the centred, full-size state
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          amCard.style.transition = 'transform .6s cubic-bezier(.22,1,.36,1), opacity .4s ease';
+          amCard.style.opacity = '1';
+          amCard.style.transform = 'none';
+        });
+      });
+    } else {
+      amCard.style.transition = 'none';
+      amCard.style.transform = 'none';
+      amCard.style.opacity = '1';
+    }
+    (amClose.focus ? amClose : amScroll).focus();
+  }
+
+  function closeAcademy() {
+    if (!amodal.classList.contains('is-open')) return;
+    amodal.classList.remove('is-open');
+    amodal.setAttribute('aria-hidden', 'true');
+    document.documentElement.style.overflow = '';
+
+    if (!reduce && openerNode) {
+      var nr = openerNode.getBoundingClientRect();
+      var cr = amCard.getBoundingClientRect();
+      amCard.style.transition = 'transform .45s cubic-bezier(.4,0,.6,1), opacity .4s ease';
+      amCard.style.transform = flip(nr, cr);
+      amCard.style.opacity = '0';
+    }
+    // clear inline styles once the fade-out has finished
+    amCloseTimer = setTimeout(function () {
+      amCard.style.transition = ''; amCard.style.transform = ''; amCard.style.opacity = '';
+    }, 520);
+
+    if (openerNode && openerNode.focus) openerNode.focus();
+    openerNode = null;
+  }
+
+  amClose.addEventListener('click', closeAcademy);
+  amodal.addEventListener('click', function (e) {
+    if (e.target.hasAttribute('data-close')) closeAcademy();
+  });
+  amJoin.addEventListener('click', function (e) {
+    // placeholder — no payment link yet; swap href="#" for the real URL to enable
+    if (amJoin.getAttribute('href') === '#') e.preventDefault();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeAcademy();
   });
 
   // mobile: the card crossing the screen's middle band becomes active (sky travels with scroll)
