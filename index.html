@@ -26,6 +26,8 @@
     font-family: Inter, system-ui, sans-serif;
     overflow-x: hidden;
   }
+  /* desktop: extra height so scroll drives the hero->constellation transition */
+  @media (min-width: 820px) { body { min-height: 185vh; } }
 
   /* ---- layered backdrop ----
      stars < sky phases < aura < grain < constellation lines < UI */
@@ -66,12 +68,24 @@
     min-height: 100vh; min-height: 100svh;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     text-align: center; padding: 40px 24px; pointer-events: none;
+    will-change: opacity, transform;
   }
   .eyebrow {
     position: fixed; top: 26px; left: 0; right: 0; z-index: 5;
     margin: 0; font-size: 11px; letter-spacing: .34em; text-transform: uppercase;
     color: rgba(242,237,228,.55); text-align: center; pointer-events: none;
+    will-change: opacity;
   }
+  /* scroll hint on the hero (desktop only) — fades as the constellation deploys */
+  .scrollcue {
+    position: fixed; left: 0; right: 0; bottom: 30px; z-index: 5;
+    display: none; text-align: center; pointer-events: none;
+    font-size: 10px; letter-spacing: .32em; text-transform: uppercase;
+    color: rgba(242,237,228,.5);
+  }
+  .scrollcue span { display: block; margin-top: 8px; font-size: 15px; animation: cueBob 1.8s ease-in-out infinite; }
+  @keyframes cueBob { 0%,100%{transform:translateY(0);opacity:.5} 50%{transform:translateY(5px);opacity:.9} }
+  @media (min-width: 820px) { .scrollcue { display: block; } }
   .wordmark {
     margin: 0; font-family: Fraunces, serif; font-weight: 400;
     font-size: clamp(46px, 12vw, 118px); line-height: .9; letter-spacing: -0.025em;
@@ -166,12 +180,14 @@
       left: var(--x, 50%); top: var(--y, 50%);
       transform: translate(-50%, -50%);
       transform-origin: center;
+      opacity: 0;                 /* JS reveals via scroll deploy */
+      will-change: transform, opacity;
     }
     .node.is-active, .node:hover, .node:focus-within {
       transform: translate(-50%, -50%) scale(1.05);
       z-index: 6;
     }
-    #lines { display: block; }
+    #lines { display: block; opacity: 0; }
   }
 
   /* ---- identity strip ---- */
@@ -197,7 +213,7 @@
   @media (min-width: 820px) {
     .identity {
       position: fixed; left: 0; right: 0; bottom: 20px; padding: 0;
-      z-index: 5; pointer-events: none;
+      z-index: 5; pointer-events: none; opacity: 0;   /* fades in with the constellation */
     }
   }
 
@@ -237,6 +253,8 @@
     <p class="tagline">Reprogram your mind &amp; create your dream life</p>
   </div>
 
+  <p class="scrollcue" id="scrollcue" aria-hidden="true">Scroll<span>&#8964;</span></p>
+
   <nav class="constellation" id="constellation" aria-label="Offerings"></nav>
 
   <div class="identity">
@@ -273,16 +291,16 @@
   //  Two orbits: premium 1:1 (inner) + entrada (outer). No subtitles.
   //  Each offer maps to a day-phase (dawn -> twilight).
   // ============================================================
+  // ordered by price ascending — this is also the order around the ring and the
+  // dawn->twilight sweep of the skies (node i sits at angle -90 + i*(360/7)).
   var OFFERS = [
-    // premium 1:1 — inner ring
-    { id:'coaching',     orbit:'premium', title:'1:1 Coaching',        price:'$400',    cta:'Book',   phase:4 },
-    { id:'mentor1',      orbit:'premium', title:'1-Month Mentorship',  price:'$1,100',  cta:'Book',   phase:5 },
-    { id:'mentor4',      orbit:'premium', title:'4-Month Mentorship',  price:'$4,000',  cta:'Book',   phase:6 },
-    // entrada — outer ring
     { id:'masterclass',  orbit:'entrada', title:'Purpose Masterclass', price:'$50',     cta:'Watch',  phase:0 },
     { id:'subliminal',   orbit:'entrada', title:'Personalized Subliminal', price:'$75', cta:'Get',    phase:1 },
     { id:'affirmations', orbit:'entrada', title:'Personalized Affirmations', price:'$100', cta:'Get',  phase:2 },
-    { id:'academy',      orbit:'entrada', title:'Awakening Academy',   price:'$100/mo', cta:'Join',   phase:3, flagship:true }
+    { id:'academy',      orbit:'entrada', title:'Awakening Academy',   price:'$100/mo', cta:'Join',   phase:3, flagship:true },
+    { id:'coaching',     orbit:'premium', title:'1:1 Coaching',        price:'$400',    cta:'Book',   phase:4 },
+    { id:'mentor1',      orbit:'premium', title:'1-Month Mentorship',  price:'$1,100',  cta:'Book',   phase:5 },
+    { id:'mentor4',      orbit:'premium', title:'4-Month Mentorship',  price:'$4,000',  cta:'Book',   phase:6 }
   ];
 
   // ---- day-phase palette: sky gradient + aura tint pair + how much it hides stars
@@ -316,14 +334,9 @@
     var l = document.createElement('p'); l.className = 'orbit-label'; l.textContent = text;
     wrap.appendChild(l);
   }
-  // mobile stack order: entrada first (start here) then premium (go deeper)
-  var stackOrder = OFFERS.slice().sort(function (a, b) {
-    var rank = { entrada:0, premium:1 };
-    if (rank[a.orbit] !== rank[b.orbit]) return rank[a.orbit] - rank[b.orbit];
-    return a.phase - b.phase;
-  });
+  // mobile stack: OFFERS is already entrada(cheap) -> premium(deep), price ascending
   var lastOrbit = null;
-  stackOrder.forEach(function (o) {
+  OFFERS.forEach(function (o) {
     if (o.orbit !== lastOrbit) {
       addLabel(o.orbit === 'entrada' ? 'Begin' : 'Go deeper');
       lastOrbit = o.orbit;
@@ -387,8 +400,16 @@
   nodeEls.forEach(function (el) { io.observe(el); });
 
   mqDesktop.addEventListener && mqDesktop.addEventListener('change', function () {
-    setPhase(null, null); layoutRadial();
+    setPhase(null, null); resetNodeStyles(); layoutRadial(); onScroll();
   });
+
+  // rAF-throttled scroll
+  var scrollTick = false;
+  function requestScroll(){
+    if (scrollTick) return; scrollTick = true;
+    requestAnimationFrame(function(){ scrollTick = false; onScroll(); });
+  }
+  addEventListener('scroll', requestScroll, { passive: true });
 
   // ============================================================
   //  RADIAL LAYOUT (desktop) + constellation lines
@@ -399,24 +420,15 @@
     lines.appendChild(ln); return ln;
   });
 
-  // angles (deg) per orbit — inner triangle points DOWN (keeps the tagline
-  // band clear: one node bottom-centre, two on the upper flanks above the
-  // wordmark), outer entrada square sits at the four corners.
-  var innerAng = [90, 210, 330];              // premium (3): bottom, upper-left, upper-right
-  var outerAng = [-45, 45, 135, 225];         // entrada (4): corners
-
+  // single ring around the star: node i at angle -90 + i*(360/N), clockwise from top
   function layoutRadial() {
     if (!mqDesktop.matches) return;
-    var W = innerWidth, H = innerHeight, cx = W / 2, cy = H / 2;
-    var maxRx = W / 2 - 130, maxRy = H / 2 - 96;
-    var inner = { rx: maxRx * 0.58, ry: maxRy * 0.58 };
-    var outer = { rx: maxRx * 1.0,  ry: maxRy * 1.0 };
-    var ip = 0, op = 0;
+    var W = innerWidth, H = innerHeight, cx = W / 2, cy = H / 2, N = OFFERS.length;
+    var rx = (W / 2 - 130) * 0.92, ry = (H / 2 - 96) * 0.88;
     OFFERS.forEach(function (o, idx) {
-      var ring = o.orbit === 'premium' ? inner : outer;
-      var ang = (o.orbit === 'premium' ? innerAng[ip++] : outerAng[op++]) * Math.PI / 180;
-      var x = cx + ring.rx * Math.cos(ang);
-      var y = cy + ring.ry * Math.sin(ang);
+      var ang = (-90 + idx * (360 / N)) * Math.PI / 180;
+      var x = cx + rx * Math.cos(ang);
+      var y = cy + ry * Math.sin(ang);
       o._el.style.setProperty('--x', x + 'px');
       o._el.style.setProperty('--y', y + 'px');
       var ln = lineEls[idx];
@@ -427,6 +439,72 @@
   }
   function highlightLine(node) {
     OFFERS.forEach(function (o, idx) { lineEls[idx].classList.toggle('on', o._el === node); });
+  }
+
+  // ============================================================
+  //  SCROLL DEPLOY  — hero text fades out; nodes fly from the
+  //  centre and settle into the ring around the star.
+  // ============================================================
+  var stageEl = document.querySelector('.stage');
+  var eyebrowEl = document.querySelector('.eyebrow');
+  var identityEl = document.querySelector('.identity');
+  var cueEl = document.getElementById('scrollcue');
+  function clamp01(v){ return v < 0 ? 0 : (v > 1 ? 1 : v); }
+  function easeOut(t){ return 1 - Math.pow(1 - t, 3); }
+
+  function onScroll(){
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+
+    // --- mobile: just fade the hero as the stack scrolls up ---
+    if (!mqDesktop.matches){
+      var mp = clamp01(y / (innerHeight * 0.5));
+      stageEl.style.opacity = (1 - mp); stageEl.style.transform = '';
+      eyebrowEl.style.opacity = (1 - mp);
+      return;
+    }
+
+    // --- desktop: scroll drives the deploy ---
+    var vh = innerHeight, cx = innerWidth / 2, cy = innerHeight / 2;
+    var p = clamp01(y / (vh * 0.62));
+    var heroFade = 1 - clamp01(p / 0.5);
+    stageEl.style.opacity = heroFade;
+    stageEl.style.transform = 'translateY(' + (-34 * p) + 'px)';
+    eyebrowEl.style.opacity = heroFade;
+    if (cueEl) cueEl.style.opacity = 1 - clamp01(p / 0.22);
+
+    var n = nodeEls.length, spread = 0.05 * (n - 1);
+    nodeEls.forEach(function (el, i){
+      var np = clamp01((p - 0.05 * i) / (1 - spread));
+      var e = easeOut(np);
+      if (e >= 1){
+        el.style.transition = '';           // restore CSS transition for hover pop
+        el.style.transform = '';            // let CSS place it (translate -50%,-50%)
+        el.style.opacity = '1';             // explicit (desktop CSS default is 0)
+        el.style.pointerEvents = 'auto';
+      } else {
+        var lx = el._lx || cx, ly = el._ly || cy;
+        var tx, ty, s;
+        if (reduce){ tx = 0; ty = 0; s = 1; }               // no fly-in when reduced motion
+        else { tx = (cx - lx) * (1 - e); ty = (cy - ly) * (1 - e); s = 0.12 + 0.88 * e; }
+        el.style.transition = 'none';
+        el.style.transform = 'translate(-50%,-50%) translate(' + tx + 'px,' + ty + 'px) scale(' + s + ')';
+        el.style.opacity = e.toFixed(3);
+        el.style.pointerEvents = 'none';
+      }
+    });
+    lines.style.opacity = clamp01((p - 0.45) / 0.55);
+    identityEl.style.opacity = clamp01((p - 0.55) / 0.45);
+  }
+
+  function resetNodeStyles(){
+    nodeEls.forEach(function (el){
+      el.style.transition = ''; el.style.transform = '';
+      el.style.opacity = ''; el.style.pointerEvents = '';
+    });
+    stageEl.style.opacity = ''; stageEl.style.transform = '';
+    eyebrowEl.style.opacity = ''; lines.style.opacity = '';
+    identityEl.style.opacity = '';
+    if (cueEl) cueEl.style.opacity = '';
   }
 
   // ============================================================
@@ -466,7 +544,7 @@
     auraC.width=W*DPR; auraC.height=H*DPR; auraC.style.width=W+'px'; auraC.style.height=H+'px';
     lines.setAttribute('viewBox','0 0 '+W+' '+H);
     lines.setAttribute('width', W); lines.setAttribute('height', H);
-    drawStars(); layoutRadial();
+    drawStars(); layoutRadial(); onScroll();
   }
 
   function petal(cx, cy, ang, r0, len, wid, rgb, alpha){
