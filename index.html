@@ -107,10 +107,11 @@
   }
 
   .node {
+    position: relative;
     pointer-events: auto; cursor: pointer;
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
     text-align: center; text-decoration: none; color: var(--cream);
-    padding: 18px 22px; border-radius: 18px;
+    padding: 16px 22px; border-radius: 18px;
     background: rgba(12,14,26,.5); backdrop-filter: blur(8px);
     border: 1px solid rgba(242,237,228,.12);
     transition: transform .3s ease, background .3s ease, border-color .3s ease, box-shadow .3s ease;
@@ -121,11 +122,31 @@
     box-shadow: 0 0 10px 2px rgba(242,237,228,.55);
     transition: box-shadow .3s ease, transform .3s ease;
   }
+  /* spacing handled with margins (not flex gap) so collapsed price/cta
+     leave no dead space below the title */
   .node__title {
+    margin-top: 9px;
     font-family: Jost, sans-serif; font-weight: 500;
     font-size: 12.5px; text-transform: uppercase; letter-spacing: .2em;
     color: rgba(242,237,228,.92);
   }
+
+  /* animated rainbow border — appears and rotates only while active/hovered */
+  @property --nodeAngle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+  .node::before {
+    content: ''; position: absolute; inset: -1px; border-radius: 19px;
+    padding: 1.6px; pointer-events: none;
+    background: conic-gradient(from var(--nodeAngle),
+      #ff4d8d, #ff9a3d, #ffe14d, #4dffa6, #4dc7ff, #a06bff, #ff4d8d);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    opacity: 0; transition: opacity .4s ease;
+  }
+  .node.is-active::before, .node:hover::before, .node:focus-within::before {
+    opacity: .85; animation: nodeSpin 4.5s linear infinite;
+  }
+  @keyframes nodeSpin { to { --nodeAngle: 360deg; } }
   /* price stays hidden until the node is active, then blooms as the hero element */
   .node__price {
     font-family: Fraunces, serif; font-weight: 400; line-height: 1;
@@ -140,9 +161,10 @@
     font-family: Jost, sans-serif; font-size: 12px; font-weight: 500;
     text-transform: uppercase; letter-spacing: .12em;
     color: var(--cream); background: var(--accent);
-    padding: 8px 17px; border-radius: 999px;
+    padding: 0 17px; border-radius: 999px;
     max-height: 0; opacity: 0; transform: translateY(4px);
-    overflow: hidden; transition: max-height .35s ease, opacity .3s ease, transform .3s ease, margin .35s ease;
+    overflow: hidden;
+    transition: max-height .35s ease, padding .35s ease, opacity .3s ease, transform .3s ease, margin .35s ease;
     box-shadow: 0 6px 22px rgba(192,57,43,.35);
   }
   .node__cta svg { width: 13px; height: 13px; }
@@ -169,7 +191,8 @@
     max-height: 46px; opacity: 1; transform: none; margin-top: 4px;
   }
   .node.is-active .node__cta, .node:hover .node__cta, .node:focus-within .node__cta {
-    max-height: 54px; opacity: 1; transform: none; margin-top: 6px;
+    max-height: 54px; padding-top: 8px; padding-bottom: 8px;
+    opacity: 1; transform: none; margin-top: 6px;
   }
   .node:focus-visible { outline: 2px solid rgba(242,237,228,.7); outline-offset: 3px; }
 
@@ -248,6 +271,7 @@
   @media (prefers-reduced-motion: reduce) {
     #grain { animation: none; }
     .sky { transition: opacity .4s ease; }
+    .node.is-active::before, .node:hover::before, .node:focus-within::before { animation: none; }
   }
 </style>
 </head>

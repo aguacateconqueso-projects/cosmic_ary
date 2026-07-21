@@ -237,6 +237,12 @@ Vercel redespliega solo al hacer push (si el repo está conectado).
   que el barrido por el anillo ya **no** es de precio estrictamente ascendente (decisión aceptada).
 - Verificado en Chromium (1440×900 desplegado + hover, y 390×844 móvil): sin errores de app, precios
   ocultos→visibles OK, cielo cambia de fase, orden correcto.
+- **Fix de espacio muerto:** las tarjetas dejaban un hueco abajo porque el `.node__cta` colapsado
+  seguía midiendo ~16px (su padding vertical se renderizaba con `max-height:0`). Se colapsa también
+  el padding vertical del CTA → nodo pasa de 95px a 79px, contenido centrado, sin hueco.
+- **Borde arcoíris en hover:** pseudo-elemento `::before` con `conic-gradient` enmascarado al borde,
+  que **gira** mientras el nodo está activo/hover (variable `@property --nodeAngle`, 4.5s lineal).
+  Respeta `prefers-reduced-motion` (aparece estático, sin girar).
 - Pendiente/siguiente: afinar arte de los 7 cielos y links reales.
 
 <!-- Plantilla para la próxima entrada:
