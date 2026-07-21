@@ -13,16 +13,25 @@ Cuando empieces una sesión nueva, lee este archivo primero. Cuando termines, ac
 - **Implementación:** sitio estático **sin dependencias** (HTML + CSS + JS vanilla), pensado para Vercel.
 - **Repo / rama de trabajo:** `aguacateconqueso-projects/cosmic_ary` → rama `claude/cosmicary-demo-setup-fzjsc7`
 
-### Stack y estructura
+### Los 2 demos (decisión Sesión 4)
+Vamos a mantener **dos demos** en paralelo:
+1. **Demo "cool"** (el que estamos armando ahora) → aura luminosa en canvas. **Es el home actual (`index.html`).**
+2. **Demo "sobrio"** (el de letras rojas, multi-sección) → **reservado**. No se borra: vive en el
+   historial de git y sus estilos (`styles.css`, `main.js`) siguen en el repo. Se revive cuando toque.
+
+### Stack y estructura (estado actual)
 ```
-index.html      Todas las secciones: hero, retrato, Academy, Stories, free door, footer
-styles.css      Sistema de diseño: paleta, tipografía, layout responsive, reveals
-main.js         Campo de estrellas (canvas), transición de fondo al scroll, smooth-scroll, reveals
+index.html      HOME = demo "cool": hero con aura en canvas (estrellas + pétalos radiales + grano)
+                Autocontenido (CSS y JS inline). Sliders de ajuste ocultos salvo con ?tune en la URL.
+styles.css      Estilos del demo "sobrio" (rojo). NO usados por el home actual; reservados.
+main.js         JS del demo "sobrio" (starfield, transición scroll, reveals). Reservado.
 vercel.json     Config de hosting estático (clean URLs, headers, caché)
 design/         Fuente original .dc.html (referencia, no se toca)
 progreso.md     Este archivo
 README.md       Doc de instalación/deploy
 ```
+> ⚠️ El demo "sobrio" (home rojo con todas las secciones) está en el historial de git.
+> Para revivirlo: `git show <commit>:index.html` de la Sesión 2/3, o restaurarlo desde el commit previo al PR #5.
 
 ### Sistema de diseño (referencia rápida)
 - **Colores:** cosmos `#0B0E1A` · crema `#F2EDE4` · tinta `#14120F` · rojo profundo `#8B1A1A` · rojo brillante `#C0392B` · rojo CTA `#9E2422`
@@ -33,14 +42,17 @@ README.md       Doc de instalación/deploy
 
 ## 2. Estado actual
 
-**Fase:** ✅ Base desplegada y funcionando. Empezando iteración de ajustes.
+**Fase:** 🎨 Iterando el **demo "cool"** (aura). El aura ya es el home.
 
 - [x] Diseño importado desde Claude Design
-- [x] Implementado como sitio estático (verificado en navegador: hero, starfield, transición cosmos→crema, reveals)
-- [x] Commiteado y pusheado a la rama de trabajo
-- [x] Desplegado en Vercel
+- [x] Demo "sobrio" (rojo) implementado y desplegado — ahora **reservado**
+- [x] Prototipo de aura construido y aprobado por Ariana ("va bien")
+- [x] **Aura promovida a home** (`index.html`); subpágina `aura.html` eliminada → **PR #5**
+- [ ] Distribuir CTAs/enlaces según las **fases del día** (ver backlog) — pendiente próxima sesión
 
+**PR abierto:** #5 — "Aura como home (demo cool)" → falta mergear.
 **URL de producción (Vercel):** `⟶ PENDIENTE: pega aquí la URL del deploy`
+**Nota de ruta:** el aura vive en la **raíz** (`/`), ya **no** en `/aura.html` (eso da 404).
 
 ---
 
@@ -48,6 +60,12 @@ README.md       Doc de instalación/deploy
 
 Prioridad sugerida (ajústala según lo que quieras atacar):
 
+- [ ] **🔴 Botones / CTAs — NO van debajo del wordmark.** Ahora mismo "Join the Academy" y
+  "Free yoga on YouTube" están centrados bajo el tagline solo como colocación temporal.
+  **Decisión de Ariana:** se van a **distribuir según las "fases del día"** (concepto por definir
+  la próxima sesión). Rediseñar su ubicación/agrupación con esa lógica antes de dar el home por bueno.
+- [ ] **Sistema de cielos / fases** — el aura cambia según fase del día (ver `PLAN-experiencia-cosmica.md`).
+  Ligar aquí la distribución de los CTAs del punto anterior.
 - [ ] **Foto de Ariana** en el hero — hoy es un placeholder con la forma de arco. Sustituir `.image-slot` por `<img>` real (ver README). *(Necesito la imagen.)*
 - [ ] **Enlaces reales** — YouTube, Instagram, TikTok, Spotify, podcast, WhatsApp community (hoy son `#`).
 - [ ] **CTA "Become a Member" / "Join the Academy"** — conectar a la pasarela de pago o formulario real.
@@ -116,6 +134,20 @@ Vercel redespliega solo al hacer push (si el repo está conectado).
 - **Construido `aura.html`** (primer bloque): aura en canvas sobre la noche, con pétalos
   radiales alternos, deriva de color rosa↔azul, latido, grano y panel de ajustes en vivo.
 - Pendiente: feedback del aura → luego sistema de cielos.
+
+### 2026-07-21 — Sesión 4 · Aura → home + decisión de 2 demos
+- Aclarado un malentendido de flujo: todo el trabajo **sí** llega a `main` vía PR; la confusión era
+  que el aura estaba en `/aura.html` (subpágina) y no en la home. Ariana no quería subpágina.
+- **`index.html` reescrito**: ahora es el **hero con el aura** (antes `aura.html`). Autocontenido,
+  con `<title>`/meta reales. **`aura.html` eliminado.**
+- **Decisión clave: dos demos** — "cool" (aura, home actual) y "sobrio" (rojo, reservado en git).
+  El rojo NO se borra; `styles.css`/`main.js` quedan en el repo para revivirlo luego.
+- Sliders del aura ocultos por defecto; se muestran con `?tune` en la URL.
+- CTAs añadidos temporalmente bajo el tagline **pero Ariana avisa que ahí NO van**: se
+  distribuirán según las "fases del día" (a trabajar en la próxima sesión).
+- **PR #5** creado. Commit `26e55ab`.
+- Recordatorio de trabajo: hacer **solo lo pedido**, sin crear páginas/extras por iniciativa propia.
+- **Siguiente sesión:** definir concepto de "fases del día" y distribuir los CTAs con esa lógica.
 
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
