@@ -280,6 +280,12 @@ Vercel redespliega solo al hacer push/merge (si el repo está conectado).
   Al cerrar hace el camino inverso y el nodo reaparece. Con `prefers-reduced-motion` aparece sin morph.
 - **1ª versión (descartada):** era un FLIP con opacidad que se veía como "otro cuadro" apareciendo
   encima del nodo (el nodo seguía visible). Se rehízo para que sea el mismo elemento el que crece.
+- **2 bugs corregidos tras revisar un video:** (1) el cielo se reseteaba a noche al abrir porque el
+  nodo oculto disparaba `mouseleave`/`blur` → se añadió candado `amOpen` que ignora hover/focus/IO
+  mientras el modal está abierto (el cielo se queda en la fase Academy). (2) al cerrar el card
+  "desaparecía y reaparecía pequeño" porque se quitaba `is-open` (→ `visibility:hidden`) de inmediato
+  y el encogido era invisible → ahora se usa `is-closing` (sigue **visible** durante el morph) y solo
+  se oculta al terminar; el nodo reaparece en su sitio.
 - **Fondo tipo glass:** backdrop con `backdrop-filter: blur` + tinte tenue → la **estrella/aura del
   hero se sigue apreciando en movimiento** detrás, pero el card (glass más opaco) deja el texto
   totalmente legible. El cielo también vira a la fase de Academy detrás del vidrio.
