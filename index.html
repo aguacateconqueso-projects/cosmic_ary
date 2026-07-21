@@ -11,7 +11,7 @@
 <meta name="theme-color" content="#0B0E1A">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
     --cosmos: #0B0E1A;
@@ -23,7 +23,7 @@
   body {
     background: var(--cosmos);
     color: var(--cream);
-    font-family: Inter, system-ui, sans-serif;
+    font-family: Jost, system-ui, sans-serif;
     overflow-x: hidden;
   }
   /* desktop: extra height so scroll drives the hero->constellation transition */
@@ -92,8 +92,9 @@
     color: var(--cream); text-shadow: 0 2px 60px rgba(11,14,26,.75);
   }
   .tagline {
-    margin: 18px 0 0; font-family: Fraunces, serif; text-transform: uppercase;
-    letter-spacing: .2em; font-size: clamp(10px,2.2vw,14px); color: rgba(242,237,228,.72);
+    margin: 20px 0 0; font-family: Jost, sans-serif; font-weight: 300;
+    text-transform: uppercase; letter-spacing: .34em;
+    font-size: clamp(10px,2.1vw,13px); color: rgba(242,237,228,.7);
     text-shadow: 0 1px 20px rgba(11,14,26,.6);
   }
 
@@ -107,31 +108,39 @@
 
   .node {
     pointer-events: auto; cursor: pointer;
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
-    text-decoration: none; color: var(--cream);
-    padding: 16px 22px; border-radius: 18px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    text-align: center; text-decoration: none; color: var(--cream);
+    padding: 18px 22px; border-radius: 18px;
     background: rgba(12,14,26,.5); backdrop-filter: blur(8px);
     border: 1px solid rgba(242,237,228,.12);
     transition: transform .3s ease, background .3s ease, border-color .3s ease, box-shadow .3s ease;
   }
   .node__dot {
-    width: 9px; height: 9px; border-radius: 50%;
+    width: 8px; height: 8px; border-radius: 50%;
     background: var(--cream);
     box-shadow: 0 0 10px 2px rgba(242,237,228,.55);
     transition: box-shadow .3s ease, transform .3s ease;
   }
   .node__title {
-    font-family: Fraunces, serif; font-size: 17px; letter-spacing: .01em;
+    font-family: Jost, sans-serif; font-weight: 500;
+    font-size: 12.5px; text-transform: uppercase; letter-spacing: .2em;
+    color: rgba(242,237,228,.92);
   }
+  /* price stays hidden until the node is active, then blooms as the hero element */
   .node__price {
-    font-size: 13px; color: rgba(242,237,228,.72); font-variant-numeric: tabular-nums;
-    letter-spacing: .04em;
+    font-family: Fraunces, serif; font-weight: 400; line-height: 1;
+    font-size: 27px; color: var(--cream);
+    font-variant-numeric: tabular-nums; letter-spacing: .005em;
+    max-height: 0; opacity: 0; transform: translateY(6px);
+    overflow: hidden;
+    transition: max-height .4s ease, opacity .3s ease, transform .35s ease, margin .4s ease;
   }
   .node__cta {
-    margin-top: 4px; display: inline-flex; align-items: center; gap: 7px;
-    font-size: 13px; font-weight: 500; letter-spacing: .02em;
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: Jost, sans-serif; font-size: 12px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: .12em;
     color: var(--cream); background: var(--accent);
-    padding: 9px 18px; border-radius: 999px;
+    padding: 8px 17px; border-radius: 999px;
     max-height: 0; opacity: 0; transform: translateY(4px);
     overflow: hidden; transition: max-height .35s ease, opacity .3s ease, transform .3s ease, margin .35s ease;
     box-shadow: 0 6px 22px rgba(192,57,43,.35);
@@ -156,8 +165,11 @@
     transform: scale(1.25);
     box-shadow: 0 0 16px 4px rgba(242,237,228,.75);
   }
+  .node.is-active .node__price, .node:hover .node__price, .node:focus-within .node__price {
+    max-height: 46px; opacity: 1; transform: none; margin-top: 4px;
+  }
   .node.is-active .node__cta, .node:hover .node__cta, .node:focus-within .node__cta {
-    max-height: 54px; opacity: 1; transform: none; margin-top: 8px;
+    max-height: 54px; opacity: 1; transform: none; margin-top: 6px;
   }
   .node:focus-visible { outline: 2px solid rgba(242,237,228,.7); outline-offset: 3px; }
 
@@ -291,13 +303,15 @@
   //  Two orbits: premium 1:1 (inner) + entrada (outer). No subtitles.
   //  Each offer maps to a day-phase (dawn -> twilight).
   // ============================================================
-  // ordered by price ascending — this is also the order around the ring and the
-  // dawn->twilight sweep of the skies (node i sits at angle -90 + i*(360/7)).
+  // Array index = position around the ring (node i at angle -90 + i*(360/7),
+  // clockwise from the top) and also the mobile stack order. Flagship
+  // (Awakening Academy) leads at the top-centre; Purpose Masterclass takes
+  // Academy's old slot. Each offer keeps its own day-phase (sky) regardless.
   var OFFERS = [
-    { id:'masterclass',  orbit:'entrada', title:'Purpose Masterclass', price:'$50',     cta:'Watch',  phase:0 },
+    { id:'academy',      orbit:'entrada', title:'Awakening Academy',   price:'$100/mo', cta:'Join',   phase:3, flagship:true },
     { id:'subliminal',   orbit:'entrada', title:'Personalized Subliminal', price:'$75', cta:'Get',    phase:1 },
     { id:'affirmations', orbit:'entrada', title:'Personalized Affirmations', price:'$100', cta:'Get',  phase:2 },
-    { id:'academy',      orbit:'entrada', title:'Awakening Academy',   price:'$100/mo', cta:'Join',   phase:3, flagship:true },
+    { id:'masterclass',  orbit:'entrada', title:'Purpose Masterclass', price:'$50',     cta:'Watch',  phase:0 },
     { id:'coaching',     orbit:'premium', title:'1:1 Coaching',        price:'$400',    cta:'Book',   phase:4 },
     { id:'mentor1',      orbit:'premium', title:'1-Month Mentorship',  price:'$1,100',  cta:'Book',   phase:5 },
     { id:'mentor4',      orbit:'premium', title:'4-Month Mentorship',  price:'$4,000',  cta:'Book',   phase:6 }
