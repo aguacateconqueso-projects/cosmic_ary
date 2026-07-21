@@ -758,10 +758,10 @@
       amCard.classList.remove('is-expanded', 'show-content');
       amCard.style.left = ''; amCard.style.top = '';
       amCard.style.width = ''; amCard.style.height = ''; amCard.style.borderRadius = '';
-      if (node){
-        node.style.visibility = '';                       // reveal the real node again
-        if (node.focus){ phaseGuard = true; node.focus(); setTimeout(function(){ phaseGuard = false; }, 60); }
-      }
+      // reveal the real node in its RESTING look (title only). We deliberately
+      // do NOT re-focus it: focusing triggers .node:focus-within, which blooms
+      // the price and makes the card "jump" from no-price to price on close.
+      if (node) node.style.visibility = '';
     }
 
     if (!reduce && node){

@@ -298,6 +298,17 @@ Vercel redespliega solo al hacer push/merge (si el repo está conectado).
 - Pendiente/siguiente: afinar arte de cielos, y (opcional) modales para el resto de ofertas si se
   decide replicar el patrón.
 
+### 2026-07-21 — Sesión 11 · Fix del glitch de precio al cerrar el modal
+- **Bug:** al cerrar, el card mostraba el título sin precio (ghost) y **saltaba a mostrar el precio**.
+  Causa: en `finish()` refocaba el nodo (`node.focus()`), y el CSS `.node:focus-within` **hace
+  florecer el precio** (el `phaseGuard` solo frenaba el JS, no el CSS).
+- **Fix:** se **elimina el refoco del nodo** al cerrar. El nodo reaparece en reposo (solo título),
+  igual que el ghost → cierre continuo sin salto. El foco pasa a `body` al ocultarse el modal.
+- Verificado en Chromium (1440×900): el nodo nunca queda `:focus-within` al cerrar, el precio no
+  aparece, el card se encoge limpio hacia el nodo. Sin errores de app.
+- **Recordatorio de flujo reforzado:** cada cambio = **rama fresca desde `main` + PR nuevo**. Se
+  estaba empujando fixes a ramas cuyo PR ya estaba mergeado (no se veían). Corregido.
+
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
 - Qué se hizo
