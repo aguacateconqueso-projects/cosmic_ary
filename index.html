@@ -263,6 +263,9 @@
     visibility: hidden; pointer-events: none;
   }
   .amodal.is-open { visibility: visible; pointer-events: auto; }
+  /* while closing we keep the modal VISIBLE (so the shrink-back morph shows)
+     but stop taking clicks and fade the backdrop out */
+  .amodal.is-closing { pointer-events: none; }
   .amodal__backdrop {
     position: absolute; inset: 0;
     background: rgba(8,10,20,.42);
@@ -271,6 +274,7 @@
     opacity: 0; transition: opacity .55s ease;
   }
   .amodal.is-open .amodal__backdrop { opacity: 1; }
+  .amodal.is-closing .amodal__backdrop { opacity: 0; }
 
   /* the card IS the node — it starts sized/placed exactly over the node
      (node look) and morphs to the centred glass panel. JS drives geometry;
@@ -618,6 +622,9 @@
   var activeIdx = -1;              // index into PHASES, -1 = night
   var targetWarm = BASE_WARM.slice(), targetCool = BASE_COOL.slice();
   var starsEl = document.getElementById('stars');
+  // while the Academy modal is open, hover/focus on nodes must NOT touch the
+  // sky (the hidden node would fire mouseleave/blur and reset it to night).
+  var amOpen = false, phaseGuard = false;
 
   function setPhase(phaseIdx, node) {
     activeIdx = (phaseIdx == null) ? -1 : phaseIdx;
@@ -637,12 +644,13 @@
   // hover / focus (desktop)  ·  tap (both)
   nodeEls.forEach(function (el) {
     var ph = parseInt(el.getAttribute('data-phase'), 10);
-    el.addEventListener('mouseenter', function () { if (mqDesktop.matches) setPhase(ph, el); });
-    el.addEventListener('mouseleave', function () { if (mqDesktop.matches) setPhase(null, null); });
-    el.addEventListener('focus',      function () { setPhase(ph, el); });
-    el.addEventListener('blur',       function () { if (mqDesktop.matches) setPhase(null, null); });
+    el.addEventListener('mouseenter', function () { if (amOpen || phaseGuard) return; if (mqDesktop.matches) setPhase(ph, el); });
+    el.addEventListener('mouseleave', function () { if (amOpen || phaseGuard) return; if (mqDesktop.matches) setPhase(null, null); });
+    el.addEventListener('focus',      function () { if (amOpen || phaseGuard) return; setPhase(ph, el); });
+    el.addEventListener('blur',       function () { if (amOpen || phaseGuard) return; if (mqDesktop.matches) setPhase(null, null); });
     el.addEventListener('click', function (e) {
       e.preventDefault();
+      if (amOpen) return;
       setPhase(ph, el);
       if (el.getAttribute('data-id') === 'academy') openAcademy(el);   // flagship -> expand
     });
@@ -683,7 +691,9 @@
 
   function openAcademy(node){
     openerNode = node || null;
+    amOpen = true;                             // lock the sky on Academy's phase
     clearTimeout(amCloseTimer); clearTimeout(amDoneTimer);
+    amodal.classList.remove('is-closing');
     amodal.classList.add('is-open');
     amodal.setAttribute('aria-hidden', 'false');
     document.documentElement.style.overflow = 'hidden';
@@ -730,35 +740,41 @@
   }
 
   function closeAcademy(){
-    if (!amodal.classList.contains('is-open')) return;
-    clearTimeout(amDoneTimer);
+    if (!amodal.classList.contains('is-open') || amodal.classList.contains('is-closing')) return;
+    clearTimeout(amDoneTimer); clearTimeout(amCloseTimer);
     var node = openerNode; openerNode = null;
+    amOpen = false;
+    setPhase(null, null);                        // sky eases back to night as it closes
     amCard.classList.remove('is-done');
     amScroll.scrollTop = 0;
     document.documentElement.style.overflow = '';
-    amodal.classList.remove('is-open');        // backdrop fades out
+    // keep the modal VISIBLE during the shrink; only fade the backdrop for now
+    amodal.classList.add('is-closing');
     amodal.setAttribute('aria-hidden', 'true');
 
-    function reset(){
+    function finish(){
+      amodal.classList.remove('is-open', 'is-closing');   // NOW hide it (morph already played)
       amCard.style.transition = 'none';
+      amCard.classList.remove('is-expanded', 'show-content');
       amCard.style.left = ''; amCard.style.top = '';
       amCard.style.width = ''; amCard.style.height = ''; amCard.style.borderRadius = '';
-      if (node) node.style.visibility = '';     // reveal the real node again
+      if (node){
+        node.style.visibility = '';                       // reveal the real node again
+        if (node.focus){ phaseGuard = true; node.focus(); setTimeout(function(){ phaseGuard = false; }, 60); }
+      }
     }
 
     if (!reduce && node){
       var n = centreOf(node);
       amCard.style.transition = MORPH;
-      amCard.classList.remove('is-expanded', 'show-content');  // info fades out, box shrinks back
+      amCard.classList.remove('is-expanded', 'show-content');  // info fades out, box shrinks back into the node
       amCard.style.borderRadius = '';
       amCard.style.left = n.cx + 'px'; amCard.style.top = n.cy + 'px';
       amCard.style.width = n.w + 'px'; amCard.style.height = n.h + 'px';
-      amCloseTimer = setTimeout(reset, 600);
+      amCloseTimer = setTimeout(finish, 580);
     } else {
-      amCard.classList.remove('is-expanded', 'show-content');
-      reset();
+      finish();
     }
-    if (node && node.focus) node.focus();
   }
 
   amClose.addEventListener('click', closeAcademy);
@@ -775,7 +791,7 @@
 
   // mobile: the card crossing the screen's middle band becomes active (sky travels with scroll)
   var io = new IntersectionObserver(function (entries) {
-    if (mqDesktop.matches) return;
+    if (mqDesktop.matches || amOpen) return;
     entries.forEach(function (en) {
       if (en.isIntersecting) {
         var ph = parseInt(en.target.getAttribute('data-phase'), 10);
