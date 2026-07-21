@@ -202,6 +202,24 @@ Vercel redespliega solo al hacer push (si el repo está conectado).
 - Pendiente / siguiente: afinar arte de los 7 cielos, links reales cuando se pasen, y decidir si
   el bloque de identidad lleva "Transformational Mentor".
 
+### 2026-07-21 — Sesión 7 · Modelo "dos pantallas" (scroll-deploy)
+- Feedback: el modelo hover-por-nodo "no funcionaba" aunque la idea gustó. Nuevo concepto de
+  interacción sobre **una sola pantalla física**:
+  - **Estado hero:** nombre + CosmicAry + tagline + estrella, limpio (sin nodos ni socials).
+  - **Al hacer scroll:** el texto del hero se desvanece, **se mantiene fondo + estrella**, y los
+    botones **se despliegan desde el centro** con animación hasta formar **un círculo** que rodea
+    la estrella. El strip de identidad (Free yoga + redes) aparece junto con la constelación.
+- **Un solo círculo** de 7 nodos (antes dos órbitas), ordenados por **precio ascendente** = barrido
+  de cielos amanecer→crepúsculo. Nodo i en el ángulo −90 + i·(360/7), horario desde arriba.
+- Implementación: `body` alto en desktop → el scroll maneja un progreso `p`; el hero hace fade y
+  cada nodo interpola posición centro→anillo + escala + opacidad (con leve stagger). Al terminar
+  se limpian los estilos inline para que el hover (cielo + aura + CTA) siga funcionando.
+- **Móvil:** se conserva el stack vertical con el cielo viajando con el scroll.
+- a11y: `prefers-reduced-motion` desactiva el vuelo (los nodos aparecen sin desplazarse).
+- Verificado en Chromium (1440×900 y 390×844): hero limpio, despliegue en círculo, hover OK, sin
+  scroll horizontal, sin errores. Actualiza el PR de la constelación.
+- Pendiente/siguiente: afinar arte de cielos, links reales, y el centro exacto de la estrella.
+
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
 - Qué se hizo
