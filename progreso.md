@@ -183,6 +183,25 @@ Vercel redespliega solo al hacer push (si el repo está conectado).
   propio y EN/ES. Enlaces y links de CTA quedan como placeholders hasta que se pasen.
 - Pendiente: implementar la constelación + sistema de cielos.
 
+### 2026-07-21 — Sesión 6 · Constelación de CTAs + fases del día
+- **Reescrito `index.html`** para reubicar los CTAs como **constelación de 7 ofertas** (las del
+  `PLAN`) alrededor del aura, con **sistema de cielos** ligado a cada nodo.
+- **Desktop:** layout radial — órbita interior premium (Coaching/1-Month/4-Month, triángulo
+  apuntando abajo para no pisar el tagline) + exterior entrada (Masterclass/Subliminal/
+  Affirmations/Academy en las esquinas). Líneas de constelación desde el centro. Hover/focus
+  abre el nodo (muestra CTA) y funde el cielo a la fase de esa oferta; el aura vira de tono.
+- **Móvil:** columna vertical con etiquetas "Begin"/"Go deeper"; el cielo **viaja con el scroll**
+  (la tarjeta centrada se activa vía IntersectionObserver).
+- **Sin copy:** cada nodo solo título + precio; al abrir aparece solo el CTA (placeholder `#`).
+- **7 fases** de amanecer→crepúsculo (cada oferta su hora); base sin foco = noche estrellada,
+  que se atenúa según la luz del cielo activo.
+- Verificado en Chromium (1440×900 y 390×844): 7 nodos en pantalla, sin scroll horizontal, sin
+  errores de app, crossfade de cielos y aura OK.
+- Decisiones tomadas (todas del `PLAN`, no inventadas): órbita interior = premium, exterior =
+  entrada; Academy resaltado como flagship; orden por fase = precio ascendente.
+- Pendiente / siguiente: afinar arte de los 7 cielos, links reales cuando se pasen, y decidir si
+  el bloque de identidad lleva "Transformational Mentor".
+
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
 - Qué se hizo
