@@ -46,17 +46,26 @@ README.md       Doc de instalación/deploy
 
 ## 2. Estado actual
 
-**Fase:** 🎨 Iterando el **demo "cool"** (aura). El aura ya es el home.
+**Fase:** 🎨 Iterando el **demo "cool"** (aura + constelación). Modelo "dos pantallas" por scroll.
 
 - [x] Diseño importado desde Claude Design
 - [x] Demo "sobrio" (rojo) implementado y desplegado — ahora **reservado**
 - [x] Prototipo de aura construido ("va bien")
-- [x] **Aura promovida a home** (`index.html`); subpágina `aura.html` eliminada → **PR #5**
-- [ ] Reubicar CTAs (constelación) + ligarlos al **sistema de cielos/fases** — pendiente próxima sesión
+- [x] **Aura promovida a home** (`index.html`); subpágina `aura.html` eliminada
+- [x] **Constelación de CTAs + sistema de cielos** (fases del día) — mergeado a `main` (PR #9)
+- [x] **Modelo "dos pantallas" (scroll-deploy)** — hero limpio → scroll despliega los botones en
+  círculo alrededor de la estrella → **PR #12** (abierto, apunta a `main`)
+- [ ] Afinar arte de los 7 cielos + centro de la estrella (queda punto oscuro sin el wordmark)
+- [ ] Enlaces reales (placeholders por ahora)
 
-**PR abierto:** #5 — "Aura como home (demo cool)" → falta mergear.
+**PR abierto:** **#12** — "Modelo dos pantallas (scroll despliega botones en círculo)" → falta
+mergear/visualizar en preview.
 **URL de producción (Vercel):** `⟶ PENDIENTE: pega aquí la URL del deploy`
-**Nota de ruta:** el aura vive en la **raíz** (`/`), ya **no** en `/aura.html` (eso da 404).
+
+> ⚠️ **Flujo del repo:** hay **auto-merge** de los PRs a `main` (se cierran casi al instante). Por
+> eso: **commit → push → abrir el PR a `main` en el mismo paso**, antes de seguir iterando, para
+> que ningún cambio quede huérfano en la rama sin PR (pasó con el scroll-deploy → se corrigió con #12).
+> Rama de la constelación: `claude/constelacion-cielos`.
 
 ---
 
