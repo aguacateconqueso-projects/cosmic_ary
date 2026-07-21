@@ -108,11 +108,15 @@ npx serve .            # o: python3 -m http.server 3000
 # abrir http://localhost:3000
 ```
 
-**Flujo de commits:**
+**Flujo de trabajo (SIEMPRE):** todo va **hacia `main`** mediante un **PR nuevo por cada cambio**.
+Rama de trabajo → commit → push → **PR hacia `main`** para revisar los cambios. Nunca commitear
+directo a `main`.
+
 ```bash
 git add -A
 git commit -m "..."
-git push -u origin claude/cosmicary-demo-setup-fzjsc7
+git push -u origin <rama-de-trabajo>
+# luego abrir PR hacia main
 ```
 Vercel redespliega solo al hacer push (si el repo está conectado).
 
