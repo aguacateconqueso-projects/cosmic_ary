@@ -46,17 +46,19 @@ README.md       Doc de instalación/deploy
 
 ## 2. Estado actual
 
-**Fase:** 🎨 Iterando el **demo "cool"** (aura). El aura ya es el home.
+**Fase:** 🎨 Demo "cool" (aura) es el home. Constelación de ofertas + cielos + botones pulidos, todo en `main`.
 
 - [x] Diseño importado desde Claude Design
-- [x] Demo "sobrio" (rojo) implementado y desplegado — ahora **reservado**
-- [x] Prototipo de aura construido ("va bien")
-- [x] **Aura promovida a home** (`index.html`); subpágina `aura.html` eliminada → **PR #5**
-- [ ] Reubicar CTAs (constelación) + ligarlos al **sistema de cielos/fases** — pendiente próxima sesión
+- [x] Demo "sobrio" (rojo) implementado — ahora **reservado**
+- [x] **Aura promovida a home** (`index.html`)
+- [x] **Constelación de CTAs** + **sistema de cielos/fases** (modelo "dos pantallas": scroll despliega los nodos en círculo)
+- [x] **Botones pulidos:** fuente Jost, precios ocultos que florecen en hover, Academy arriba al centro, tarjetas compactas (sin espacio muerto), borde arcoíris giratorio en hover
+- [ ] Afinar arte de los 7 cielos
+- [ ] Enlaces reales (YouTube/IG/TikTok/Spotify/podcast) — hoy `#` placeholder
 
-**PR abierto:** #5 — "Aura como home (demo cool)" → falta mergear.
+**PRs recientes mergeados:** #12 (dos pantallas), #13 (botones: fuente/precios/orden), #15 (tarjetas compactas + arcoíris + regla de flujo).
+**Sin PRs abiertos.** Último `main`: constelación completa y botones pulidos.
 **URL de producción (Vercel):** `⟶ PENDIENTE: pega aquí la URL del deploy`
-**Nota de ruta:** el aura vive en la **raíz** (`/`), ya **no** en `/aura.html` (eso da 404).
 
 ---
 
@@ -256,6 +258,17 @@ Vercel redespliega solo al hacer push/merge (si el repo está conectado).
   que **gira** mientras el nodo está activo/hover (variable `@property --nodeAngle`, 4.5s lineal).
   Respeta `prefers-reduced-motion` (aparece estático, sin girar).
 - Pendiente/siguiente: afinar arte de los 7 cielos y links reales.
+
+### 2026-07-21 — Sesión 9 · Regla de flujo + reconciliación de PRs (cierre)
+- **Lío de PRs (culpa del flujo, ya corregido):** se apilaron commits sobre la misma rama de botones.
+  El PR #13 se mergeó **solo con su primer commit** (Jost/precios/orden); el fix de espacio muerto +
+  arcoíris quedaron fuera de `main`. Se rerebasó sobre el `main` actual y se abrió el **PR #15** que
+  los trajo (+ la regla). Ambos mergeados. `main` quedó completo.
+- **Grabada la REGLA DE FLUJO** (ver §4): PR nuevo por cada cambio **cortando siempre desde el `main`
+  más reciente**, un cambio por rama, y **mergear antes de empezar el siguiente**. Esto es lo que
+  evita los conflicts (la causa era rama vieja + apilar PRs, no GitHub).
+- Actualizada la §2 (Estado actual) a la realidad: constelación + cielos + botones pulidos en `main`.
+- **Cierre de sesión.** Siguiente: nueva sesión (afinar cielos y/o links reales cuando se pasen).
 
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
