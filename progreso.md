@@ -108,17 +108,29 @@ npx serve .            # o: python3 -m http.server 3000
 # abrir http://localhost:3000
 ```
 
-**Flujo de trabajo (SIEMPRE):** todo va **hacia `main`** mediante un **PR nuevo por cada cambio**.
-Rama de trabajo → commit → push → **PR hacia `main`** para revisar los cambios. Nunca commitear
-directo a `main`.
+### ⚠️ REGLA DE FLUJO — PR NUEVO A `main` POR CADA CAMBIO (SIEMPRE, sin excepción)
 
-```bash
-git add -A
-git commit -m "..."
-git push -u origin <rama-de-trabajo>
-# luego abrir PR hacia main
-```
-Vercel redespliega solo al hacer push (si el repo está conectado).
+Todo cambio va a `main` mediante **un PR nuevo**. Nunca commitear directo a `main`, nunca reusar un
+PR viejo para trabajo nuevo. **Pero un PR nuevo NO basta por sí solo** — los conflicts que tuvimos en
+este proyecto vinieron de ramas cortadas desde un `main` viejo. La regla completa, **en este orden**:
+
+1. **Cortar SIEMPRE desde el `main` más reciente** (esto es lo que evita los conflicts):
+   ```bash
+   git fetch origin main
+   git checkout -B <rama-nueva> origin/main   # arranca de main actualizado, no de una rama vieja
+   ```
+2. Hacer **un solo cambio** por rama → `commit` → `push -u origin <rama-nueva>`.
+3. Abrir **un PR nuevo hacia `main`** (uno por cambio).
+4. **Mergear ese PR antes de empezar el siguiente cambio.** No apilar PRs abiertos que toquen los
+   mismos archivos (`index.html`, `progreso.md`) — si se apilan, chocan entre ellos.
+5. Repetir desde el paso 1 (rama fresca desde el `main` ya actualizado con lo anterior).
+
+> **Por qué se rompió antes (Sesión 8):** la rama de los botones se creó desde un `main` desactualizado
+> y acumuló varios cambios mientras `main` avanzaba con otros PRs (#9/#10/#12, modelo "dos pantallas").
+> Al mergear, chocó. Se arregló rebasando sobre `main`. La lección: **base fresca + un PR por cambio +
+> mergear antes de seguir.**
+
+Vercel redespliega solo al hacer push/merge (si el repo está conectado).
 
 ---
 
