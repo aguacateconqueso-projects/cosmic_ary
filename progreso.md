@@ -270,23 +270,27 @@ Vercel redespliega solo al hacer push/merge (si el repo está conectado).
 - Actualizada la §2 (Estado actual) a la realidad: constelación + cielos + botones pulidos en `main`.
 - **Cierre de sesión.** Siguiente: nueva sesión (afinar cielos y/o links reales cuando se pasen).
 
-### 2026-07-21 — Sesión 10 · Modal de Awakening Academy
-- **Al hacer click en el nodo flagship (Awakening Academy)** ahora se abre un **modal** con toda la
-  info de la oferta (precio, copy real de Ariana, checklist "What's included" y CTA).
-- **Animación FLIP:** el card crece y se desliza desde la posición del nodo hasta el centro con
-  easing suave (`cubic-bezier(.22,1,.36,1)`); al cerrar hace el camino inverso. Con
-  `prefers-reduced-motion` aparece sin vuelo.
+### 2026-07-21 — Sesión 10 · Modal de Awakening Academy (mismo cuadro que crece)
+- **Al hacer click en el nodo flagship (Awakening Academy)** ahora **el mismo cuadro crece** y se
+  transforma en un panel central con toda la info (precio, copy real, checklist "What's included", CTA).
+- **Mecánica shared-element (no es un cuadro nuevo):** se **oculta el nodo real** y el card del modal
+  arranca **exactamente en su posición y tamaño** mostrando el título del nodo ("ghost"); luego
+  **morphea** (left/top/width/height + color/border/radius, `cubic-bezier(.5,.05,.2,1)` .58s) hasta el
+  panel centrado. Mientras crece, **el texto del nodo hace fade-out y la info completa hace fade-in**.
+  Al cerrar hace el camino inverso y el nodo reaparece. Con `prefers-reduced-motion` aparece sin morph.
+- **1ª versión (descartada):** era un FLIP con opacidad que se veía como "otro cuadro" apareciendo
+  encima del nodo (el nodo seguía visible). Se rehízo para que sea el mismo elemento el que crece.
 - **Fondo tipo glass:** backdrop con `backdrop-filter: blur` + tinte tenue → la **estrella/aura del
   hero se sigue apreciando en movimiento** detrás, pero el card (glass más opaco) deja el texto
   totalmente legible. El cielo también vira a la fase de Academy detrás del vidrio.
 - **Cerrar:** botón "×" arriba a la derecha (gira en hover), tecla **Esc**, y click en el backdrop.
   Scroll del fondo bloqueado mientras está abierto; el foco vuelve al nodo al cerrar.
 - **Botón "Become a Member":** píldora con degradado rojo, brillo que barre en loop y lift en hover.
-  `href="#"` **placeholder** — reemplazar por el link de pago real cuando se pase (marcado con TODO).
+  `href="#"` como placeholder — **es un demo, el link de pago NO es pendiente** (queda así a propósito).
 - **Móvil:** el modal ocupa toda la pantalla (scroll interno). Verificado en Chromium (1440×900 y
   390×844): abre/cierra OK, contenido legible sobre el glass, sin errores de app.
-- Pendiente/siguiente: link de pago real, afinar arte de cielos, y (opcional) modales para el resto
-  de ofertas si se decide replicar el patrón.
+- Pendiente/siguiente: afinar arte de cielos, y (opcional) modales para el resto de ofertas si se
+  decide replicar el patrón.
 
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
