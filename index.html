@@ -1,173 +1,283 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CosmicAry — Ariana Del Rosario · Transformational Mentor</title>
-  <meta name="description" content="Transformational mentor. Rewire your identity. Create your reality — mind, energy, body. Awakening Academy, a transformation & manifestation school.">
-  <meta property="og:title" content="CosmicAry — Ariana Del Rosario">
-  <meta property="og:description" content="Everything you want is in the unknown. Rewire your identity. Transform your reality.">
-  <meta property="og:type" content="website">
-  <meta name="theme-color" content="#0B0E1A">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CosmicAry — Ariana Del Rosario · Transformational Mentor</title>
+<meta name="description" content="Transformational mentor. Rewire your identity. Create your reality — mind, energy, body. Awakening Academy, a transformation & manifestation school.">
+<meta property="og:title" content="CosmicAry — Ariana Del Rosario">
+<meta property="og:description" content="Reprogram your mind & create your dream life.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0B0E1A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cosmos: #0B0E1A;
+    --cream: #F2EDE4;
+    --accent: #C0392B;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--cosmos);
+    color: var(--cream);
+    font-family: Inter, system-ui, sans-serif;
+    overflow: hidden;
+  }
+
+  /* stacking: stars < ambient glow < aura < grain < UI */
+  #stars, #aura {
+    position: fixed; inset: 0; width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  #stars { z-index: 0; }
+  #aura  { z-index: 2; filter: blur(var(--auraBlur, 12px)); }
+
+  /* film grain */
+  #grain {
+    position: fixed; inset: -50%; width: 200%; height: 200%;
+    z-index: 3; pointer-events: none; opacity: .05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+    animation: grainShift 6s steps(6) infinite;
+  }
+  @keyframes grainShift {
+    0%{transform:translate(0,0)} 20%{transform:translate(-4%,3%)} 40%{transform:translate(3%,-2%)}
+    60%{transform:translate(-2%,4%)} 80%{transform:translate(4%,2%)} 100%{transform:translate(0,0)}
+  }
+
+  /* hero */
+  .stage {
+    position: fixed; inset: 0; z-index: 4;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; pointer-events: none; padding: 0 24px;
+  }
+  .eyebrow {
+    margin: 0 0 18px; font-size: 11px; letter-spacing: .34em; text-transform: uppercase;
+    color: rgba(242,237,228,.5);
+  }
+  .wordmark {
+    margin: 0; font-family: Fraunces, serif; font-weight: 400;
+    font-size: clamp(52px, 15vw, 150px); line-height: .9; letter-spacing: -0.025em;
+    color: var(--cream);
+    text-shadow: 0 2px 60px rgba(11,14,26,.7);
+  }
+  .tagline {
+    margin: 20px 0 0; font-family: Fraunces, serif; text-transform: uppercase;
+    letter-spacing: .2em; font-size: clamp(10px,2.4vw,15px); color: rgba(242,237,228,.7);
+  }
+
+  /* call to action */
+  .actions {
+    margin-top: 40px; display: flex; align-items: center; gap: 26px;
+    flex-wrap: wrap; justify-content: center; pointer-events: auto;
+  }
+  .btn {
+    font-family: Inter, sans-serif; font-size: 15px; font-weight: 500;
+    padding: 14px 30px; border-radius: 999px; text-decoration: none;
+    transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+  }
+  .btn--primary {
+    background: var(--accent); color: var(--cream);
+    box-shadow: 0 8px 30px rgba(192,57,43,.35);
+  }
+  .btn--primary:hover { transform: translateY(-2px); box-shadow: 0 12px 38px rgba(192,57,43,.5); }
+  .link-underline {
+    color: rgba(242,237,228,.85); text-decoration: none; font-size: 15px;
+    border-bottom: 1px solid rgba(242,237,228,.4); padding-bottom: 3px;
+    transition: color .25s ease, border-color .25s ease;
+  }
+  .link-underline:hover { color: var(--cream); border-color: var(--cream); }
+
+  /* controls — hidden unless the URL ends in ?tune */
+  .panel {
+    position: fixed; top: 14px; right: 14px; z-index: 6;
+    width: 236px; padding: 16px 16px 8px; border-radius: 14px;
+    background: rgba(20,22,34,.72); backdrop-filter: blur(10px);
+    border: 1px solid rgba(242,237,228,.12);
+    font-size: 12px; display: none;
+  }
+  body.tune .panel { display: block; }
+  .panel h3 { margin: 0 0 12px; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: rgba(242,237,228,.55); font-weight: 500; }
+  .ctrl { margin-bottom: 12px; }
+  .ctrl label { display: flex; justify-content: space-between; margin-bottom: 5px; color: rgba(242,237,228,.8); }
+  .ctrl label b { font-weight: 500; color: var(--cream); font-variant-numeric: tabular-nums; }
+  input[type=range] { width: 100%; accent-color: var(--accent); height: 3px; }
+  .hint { font-size: 10px; color: rgba(242,237,228,.4); text-align: center; margin: 4px 0 8px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    #grain { animation: none; }
+  }
+</style>
 </head>
 <body>
   <canvas id="stars" aria-hidden="true"></canvas>
+  <canvas id="aura" aria-hidden="true"></canvas>
+  <div id="grain" aria-hidden="true"></div>
 
-  <div class="page">
-
-    <!-- 01 Hero -->
-    <section class="hero" data-screen-label="01 Hero">
-      <div class="hero__inner">
-        <p class="eyebrow eyebrow--light">Ariana Del Rosario</p>
-        <div class="wordmark-group">
-          <h1 class="wordmark">CosmicAry</h1>
-          <p class="hero__tagline">Reprogram your mind &amp; create your dream life</p>
-        </div>
-        <div class="hero__actions">
-          <a href="#academy" class="btn btn--primary" data-scroll>Join the Academy</a>
-          <a href="#free" class="link-underline" data-scroll>Free yoga on YouTube</a>
-        </div>
-      </div>
-      <div class="scroll-hint" id="scrollHint" aria-hidden="true">
-        <span class="scroll-hint__label">Scroll</span>
-        <span class="scroll-hint__line"></span>
-      </div>
-    </section>
-
-    <!-- Hero image -->
-    <section class="portrait-section" data-screen-label="Hero image">
-      <div class="portrait" data-reveal>
-        <div class="portrait__frame">
-          <div class="image-slot" role="img" aria-label="Ariana's photo — ocean light">
-            <span class="image-slot__hint">Ariana's photo — ocean light</span>
-          </div>
-        </div>
-        <p class="portrait__caption">Her light, her ocean</p>
-      </div>
-    </section>
-
-    <!-- 02 The Academy -->
-    <section id="academy" class="section section--light academy" data-screen-label="02 The Academy">
-      <div class="academy__inner">
-        <svg class="monogram" data-reveal width="76" height="76" viewBox="0 0 64 64" fill="none" aria-label="Awakening Academy monogram">
-          <circle cx="32" cy="32" r="30" stroke="currentColor" stroke-width="1"></circle>
-          <path d="M20.5 45 L32 18.5 L43.5 45" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
-          <path d="M25.8 35.5 H38.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"></path>
-          <path d="M45.5 9.5 C46.1 12.4 47.3 13.6 50.2 14.2 C47.3 14.8 46.1 16 45.5 18.9 C44.9 16 43.7 14.8 40.8 14.2 C43.7 13.6 44.9 12.4 45.5 9.5 Z" fill="currentColor"></path>
-        </svg>
-        <p class="eyebrow eyebrow--dark" data-reveal>The Academy</p>
-        <h2 class="academy__title" data-reveal>Awakening Academy</h2>
-        <p class="academy__subtitle" data-reveal>Transformation &amp; Manifestation School</p>
-        <p class="academy__tagline" data-reveal>Rewire your identity. Transform your reality.</p>
-
-        <div class="feature-list" data-reveal>
-          <div class="feature">
-            <span class="feature__num">01</span>
-            <span class="feature__text">Full self-paced course</span>
-          </div>
-          <div class="feature">
-            <span class="feature__num">02</span>
-            <span class="feature__text">Bi-weekly live group mentorship calls</span>
-          </div>
-          <div class="feature">
-            <span class="feature__num">03</span>
-            <span class="feature__text">Private WhatsApp community</span>
-          </div>
-          <div class="feature">
-            <span class="feature__num">04</span>
-            <span class="feature__text">Guided meditations, subliminals &amp; reprogramming audios</span>
-          </div>
-          <div class="feature feature--last">
-            <span class="feature__num">05</span>
-            <span class="feature__text">Yoga and conscious movement</span>
-          </div>
-        </div>
-
-        <div class="pricing" data-reveal>
-          <p class="pricing__price">$100 <span class="pricing__period">/ month</span></p>
-          <p class="pricing__note">Join or cancel whenever.</p>
-          <a href="#" class="btn btn--dark">Become a Member</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- 03 Stories -->
-    <section class="section section--light stories" data-screen-label="03 Stories">
-      <div class="stories__inner">
-        <p class="eyebrow eyebrow--dark eyebrow--center" data-reveal>Stories</p>
-        <h2 class="stories__title" data-reveal>What happens when you do the work.</h2>
-        <div class="stories__grid" data-reveal>
-          <div class="story-card">
-            <span class="story-card__mark">✳</span>
-            <p class="story-card__quote">Your students&#8217; transformations live here.</p>
-            <span class="story-card__meta">A real story, soon</span>
-          </div>
-          <div class="story-card">
-            <span class="story-card__mark">✳</span>
-            <p class="story-card__quote">In their own words — no scripts, no stock quotes.</p>
-            <span class="story-card__meta">A real story, soon</span>
-          </div>
-          <div class="story-card">
-            <span class="story-card__mark">✳</span>
-            <p class="story-card__quote">The before and after of doing the work.</p>
-            <span class="story-card__meta">A real story, soon</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 04 The free door -->
-    <section id="free" class="section section--light free" data-screen-label="04 The free door">
-      <div class="free__inner">
-        <p class="eyebrow eyebrow--dark eyebrow--center" data-reveal>The free door</p>
-        <h2 class="free__title" data-reveal>Start free. Start today.</h2>
-        <p class="free__lede" data-reveal>There is always a free way in. Nothing to buy — just begin.</p>
-        <div class="free__links" data-reveal>
-          <a href="#" class="free-link">
-            <span class="free-link__label">Monthly free yoga</span>
-            <span class="free-link__meta">Live on YouTube&nbsp;&nbsp;→</span>
-          </a>
-          <a href="#" class="free-link">
-            <span class="free-link__label">YouTube</span>
-            <span class="free-link__meta">Full lives &amp; teachings&nbsp;&nbsp;→</span>
-          </a>
-          <a href="#" class="free-link free-link--last">
-            <span class="free-link__label">Podcast</span>
-            <span class="free-link__meta">On Spotify &amp; Apple&nbsp;&nbsp;→</span>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- 05 Footer -->
-    <footer class="footer" data-screen-label="05 Footer">
-      <div class="footer__inner">
-        <svg class="footer__monogram" width="56" height="56" viewBox="0 0 64 64" fill="none" aria-label="Awakening Academy monogram">
-          <circle cx="32" cy="32" r="30" stroke="currentColor" stroke-width="1"></circle>
-          <path d="M20.5 45 L32 18.5 L43.5 45" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
-          <path d="M25.8 35.5 H38.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"></path>
-          <path d="M45.5 9.5 C46.1 12.4 47.3 13.6 50.2 14.2 C47.3 14.8 46.1 16 45.5 18.9 C44.9 16 43.7 14.8 40.8 14.2 C43.7 13.6 44.9 12.4 45.5 9.5 Z" fill="currentColor"></path>
-        </svg>
-        <div class="footer__name">
-          <p class="footer__title">Ariana Del Rosario</p>
-          <p class="footer__role">Transformational Mentor</p>
-        </div>
-        <div class="footer__social">
-          <a href="#">Instagram</a>
-          <a href="#">TikTok</a>
-          <a href="#">YouTube</a>
-          <a href="#">Spotify</a>
-        </div>
-        <p class="footer__legal">CosmicAry · Awakening Academy</p>
-      </div>
-    </footer>
-
+  <div class="stage">
+    <p class="eyebrow">Ariana Del Rosario</p>
+    <h1 class="wordmark">CosmicAry</h1>
+    <p class="tagline">Reprogram your mind &amp; create your dream life</p>
+    <div class="actions">
+      <a href="#" class="btn btn--primary">Join the Academy</a>
+      <a href="#" class="link-underline">Free yoga on YouTube</a>
+    </div>
   </div>
 
-  <script src="./main.js"></script>
+  <div class="panel" id="panel">
+    <h3>Aura · ajustes</h3>
+    <div class="ctrl"><label>Pétalos <b id="vPetals">18</b></label><input id="petals" type="range" min="6" max="30" step="1" value="18"></div>
+    <div class="ctrl"><label>Latido <b id="vBreathe">0.28</b></label><input id="breathe" type="range" min="0" max="0.6" step="0.01" value="0.28"></div>
+    <div class="ctrl"><label>Velocidad giro <b id="vSpin">0.35</b></label><input id="spin" type="range" min="0" max="1.5" step="0.05" value="0.35"></div>
+    <div class="ctrl"><label>Deriva color <b id="vDrift">0.5</b></label><input id="drift" type="range" min="0" max="1" step="0.05" value="0.5"></div>
+    <div class="ctrl"><label>Difuminado <b id="vBlur">12</b></label><input id="blur" type="range" min="0" max="60" step="1" value="12"></div>
+    <div class="ctrl"><label>Tamaño <b id="vScale">1.00</b></label><input id="scale" type="range" min="0.5" max="1.6" step="0.05" value="1"></div>
+    <div class="ctrl"><label>Brillo <b id="vGlow">0.90</b></label><input id="glow" type="range" min="0.3" max="1.5" step="0.05" value="0.9"></div>
+    <p class="hint">?tune en la URL para ver estos ajustes</p>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (/[?&]tune\b/.test(location.search)) document.body.classList.add('tune');
+
+  // ---- palette (luminous, additive over the night) ----
+  var WARM = [239, 116, 148];   // rose
+  var COOL = [116, 140, 240];   // periwinkle
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function mixCol(t) { return [
+    Math.round(lerp(WARM[0], COOL[0], t)),
+    Math.round(lerp(WARM[1], COOL[1], t)),
+    Math.round(lerp(WARM[2], COOL[2], t))
+  ]; }
+  function smoothstep(t){ t=Math.max(0,Math.min(1,t)); return t*t*(3-2*t); }
+
+  // ---- params (bound to sliders) ----
+  var P = { petals:18, breathe:0.28, spin:0.35, drift:0.5, blur:12, scale:1, glow:0.9 };
+
+  // ---- stars (faint base) ----
+  var starsC = document.getElementById('stars'), sctx = starsC.getContext('2d');
+  function mulberry32(a){return function(){a|=0;a=(a+0x6D2B79F5)|0;var t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
+  function drawStars(){
+    var dpr=Math.min(devicePixelRatio||1,2), w=innerWidth, h=innerHeight;
+    starsC.width=w*dpr; starsC.height=h*dpr; starsC.style.width=w+'px'; starsC.style.height=h+'px';
+    sctx.setTransform(dpr,0,0,dpr,0,0); sctx.clearRect(0,0,w,h);
+    var count=Math.round(90*w*h/700000), rand=mulberry32(7);
+    for(var i=0;i<count;i++){
+      var x=rand()*w,y=rand()*h,r=0.3+rand()*0.9,al=0.12+rand()*0.5,tt=rand();
+      var col=tt<0.75?'242,237,228':(tt<0.9?'255,224,196':'196,208,255');
+      sctx.beginPath(); sctx.arc(x,y,r,0,7); sctx.fillStyle='rgba('+col+','+al.toFixed(2)+')'; sctx.fill();
+    }
+  }
+
+  // ---- aura ----
+  var auraC = document.getElementById('aura'), actx = auraC.getContext('2d');
+  var W=0, H=0, DPR=1;
+  function resize(){
+    DPR=Math.min(devicePixelRatio||1,2); W=innerWidth; H=innerHeight;
+    auraC.width=W*DPR; auraC.height=H*DPR; auraC.style.width=W+'px'; auraC.style.height=H+'px';
+    drawStars();
+  }
+
+  function petal(cx, cy, ang, r0, len, wid, rgb, alpha){
+    actx.save();
+    actx.translate(cx, cy);
+    actx.rotate(ang);
+    actx.translate(r0, 0);           // start from an inner ring, not the dead center
+    var span = len - r0;
+    var g = actx.createLinearGradient(0,0, span,0);
+    var c = rgb[0]+','+rgb[1]+','+rgb[2];
+    g.addColorStop(0,   'rgba('+c+','+(alpha*0.55).toFixed(3)+')');
+    g.addColorStop(0.45,'rgba('+c+','+alpha.toFixed(3)+')');
+    g.addColorStop(0.8, 'rgba('+c+','+(alpha*0.45).toFixed(3)+')');
+    g.addColorStop(1,   'rgba('+c+',0)');
+    actx.fillStyle = g;
+    actx.beginPath();
+    actx.moveTo(0,0);
+    actx.quadraticCurveTo(span*0.4,  wid, span, 0);
+    actx.quadraticCurveTo(span*0.4, -wid, 0,   0);
+    actx.closePath();
+    actx.fill();
+    actx.restore();
+  }
+
+  function frame(now){
+    var t = now * 0.001;
+    actx.setTransform(DPR,0,0,DPR,0,0);
+    actx.clearRect(0,0,W,H);
+    actx.globalCompositeOperation = 'lighter';
+
+    var cx = W/2, cy = H/2;
+    var base = Math.min(W,H) * 0.34 * P.scale;
+    var N = P.petals;
+    var globalSpin = reduce ? 0 : t * P.spin * 0.12;
+    // color balance drifts warm<->cool over ~18s
+    var balance = reduce ? 0.5 : (Math.sin(t * 0.34) * 0.5 + 0.5) * P.drift + (1-P.drift)*0.5;
+
+    // soft ambient halo (subtle, keeps petals readable)
+    var amb = mixCol(balance);
+    var ag = actx.createRadialGradient(cx,cy,base*0.1, cx,cy, base*1.5);
+    ag.addColorStop(0, 'rgba('+amb[0]+','+amb[1]+','+amb[2]+','+(0.10*P.glow).toFixed(3)+')');
+    ag.addColorStop(1, 'rgba('+amb[0]+','+amb[1]+','+amb[2]+',0)');
+    actx.fillStyle = ag; actx.beginPath(); actx.arc(cx,cy,base*1.5,0,7); actx.fill();
+
+    var r0 = base * 0.10;   // inner ring petals radiate from
+    // two rings of petals, with alternating long/short lobes for a spiky bloom
+    for (var ring=0; ring<2; ring++){
+      var ringLen = base * (ring===0 ? 1.0 : 0.70);
+      var ringWid = base * (ring===0 ? 0.16 : 0.20);
+      var offset = ring===0 ? 0 : Math.PI/N;
+      for (var i=0;i<N;i++){
+        var a = (i/N)*Math.PI*2 + offset + globalSpin + (ring? -globalSpin*0.6:0);
+        var wob = reduce ? 0 : Math.sin(t*0.7 + i*1.3 + ring)*0.06;
+        var alt = (i % 2 === 0) ? 1 : 0.68;    // alternating lobe length
+        var breathe = reduce ? 1 : (1 + P.breathe*Math.sin(t*0.9 + i*(6.28/N)*2 + ring*1.6));
+        var len = ringLen * alt * breathe;
+        var localMix = smoothstep(balance + 0.6*Math.sin((i/N)*Math.PI*2 + t*0.25 + ring));
+        var rgb = mixCol(localMix);
+        var alpha = (ring===0 ? 0.34 : 0.26) * P.glow;
+        petal(cx, cy, a+wob, r0, Math.max(len, r0+20), ringWid, rgb, alpha);
+      }
+    }
+
+    // gentle core (not a white blob)
+    var core = mixCol(balance);
+    var cg = actx.createRadialGradient(cx,cy,0, cx,cy, base*0.32);
+    cg.addColorStop(0, 'rgba(255,236,242,'+(0.28*P.glow).toFixed(3)+')');
+    cg.addColorStop(0.5, 'rgba('+core[0]+','+core[1]+','+core[2]+','+(0.18*P.glow).toFixed(3)+')');
+    cg.addColorStop(1, 'rgba('+core[0]+','+core[1]+','+core[2]+',0)');
+    actx.fillStyle = cg; actx.beginPath(); actx.arc(cx,cy,base*0.32,0,7); actx.fill();
+
+    actx.globalCompositeOperation = 'source-over';
+    if (!reduce) raf = requestAnimationFrame(frame);
+  }
+
+  // ---- controls ----
+  function bind(id, key, fmt){
+    var el=document.getElementById(id), out=document.getElementById('v'+id.charAt(0).toUpperCase()+id.slice(1));
+    function upd(){ P[key]=parseFloat(el.value); if(out) out.textContent=fmt?fmt(P[key]):P[key];
+      if(key==='blur') document.getElementById('aura').style.setProperty('--auraBlur', P.blur+'px'); }
+    el.addEventListener('input', upd); upd();
+  }
+  bind('petals','petals'); bind('breathe','breathe',function(v){return v.toFixed(2);});
+  bind('spin','spin',function(v){return v.toFixed(2);}); bind('drift','drift',function(v){return v.toFixed(2);});
+  bind('blur','blur'); bind('scale','scale',function(v){return v.toFixed(2);});
+  bind('glow','glow',function(v){return v.toFixed(2);});
+
+  // ---- boot ----
+  var raf;
+  addEventListener('resize', resize);
+  resize();
+  if (reduce) { requestAnimationFrame(frame); }   // one static paint
+  else { raf = requestAnimationFrame(frame); }
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden){ cancelAnimationFrame(raf); } else if(!reduce){ raf=requestAnimationFrame(frame); }
+  });
+})();
+</script>
 </body>
 </html>
