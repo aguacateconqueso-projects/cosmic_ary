@@ -146,6 +146,10 @@
   .node.is-active::before, .node:hover::before, .node:focus-within::before {
     opacity: .85; animation: nodeSpin 4.5s linear infinite;
   }
+  /* when the node is revealed as the modal closes, snap the rainbow border off
+     instantly (transition:none) and hold it; removing the class lets it fade in
+     via the base .4s transition — so it eases in instead of popping at full */
+  .node.am-return::before { opacity: 0; transition: none; }
   @keyframes nodeSpin { to { --nodeAngle: 360deg; } }
   /* price stays hidden until the node is active, then blooms as the hero element */
   .node__price {
@@ -665,7 +669,7 @@
   var amClose = document.getElementById('amodalClose');
   var amJoin = document.getElementById('amodalJoin');
   var amGhost = document.getElementById('amodalGhost');
-  var openerNode = null, amCloseTimer = null, amDoneTimer = null;
+  var openerNode = null, amCloseTimer = null, amDoneTimer = null, amBorderTimer = null;
 
   // the flagship node + its phase; clone its markup into the ghost so the ghost
   // is a pixel-exact mirror of the node's active look (title + price + CTA).
@@ -705,7 +709,8 @@
   function openAcademy(node){
     openerNode = node || null;
     amOpen = true;                             // lock the sky on Academy's phase
-    clearTimeout(amCloseTimer); clearTimeout(amDoneTimer);
+    clearTimeout(amCloseTimer); clearTimeout(amDoneTimer); clearTimeout(amBorderTimer);
+    if (node) node.classList.remove('am-return');
     amodal.classList.remove('is-closing');
     amodal.classList.add('is-open');
     amodal.setAttribute('aria-hidden', 'false');
@@ -778,7 +783,12 @@
       amCard.style.width = ''; amCard.style.height = ''; amCard.style.borderRadius = '';
       // reveal the real node, still ACTIVE (title + price + CTA) so it matches
       // the ghost exactly — the close lands on the card with price, no jump.
-      if (node) node.style.visibility = '';
+      if (node){
+        node.classList.add('am-return');   // hold the rainbow border off...
+        node.style.visibility = '';
+        // ...then let it fade in after a short beat (avoids a hard pop)
+        amBorderTimer = setTimeout(function(){ node.classList.remove('am-return'); }, 200);
+      }
     }
 
     if (!reduce && node){
