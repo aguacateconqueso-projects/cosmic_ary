@@ -288,10 +288,12 @@
     left: 50%; top: 50%; width: 168px; height: 80px;
     transform: translate(-50%, -50%); transform-origin: center center;
     overflow: hidden; border-radius: 18px;
-    background: rgba(12,14,26,.55);
-    border: 1px solid rgba(242,237,228,.14);
-    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-    box-shadow: 0 10px 40px rgba(11,14,26,0);
+    /* node-look end of the morph: match the FLAGSHIP node exactly (bg, red
+       border + ring) so the hand-off to the real node has no colour pop */
+    background: rgba(12,14,26,.5);
+    border: 1px solid rgba(192,57,43,.45);
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    box-shadow: 0 0 0 1px rgba(192,57,43,.25), 0 10px 40px rgba(11,14,26,.4);
     will-change: left, top, width, height;
   }
   .amodal__card.is-expanded {
@@ -310,7 +312,9 @@
   .amodal__ghost {
     position: absolute; inset: 0; z-index: 2;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 8px; padding: 14px 20px; text-align: center; pointer-events: none;
+    /* match the node's box EXACTLY (padding 16/22, no gap — it uses margins)
+       so the content doesn't shift when the card hands off to the real node */
+    padding: 16px 22px; text-align: center; pointer-events: none;
     opacity: 1; transition: opacity .28s ease;
   }
   .amodal__card.show-content .amodal__ghost { opacity: 0; }
@@ -669,7 +673,7 @@
   var amClose = document.getElementById('amodalClose');
   var amJoin = document.getElementById('amodalJoin');
   var amGhost = document.getElementById('amodalGhost');
-  var openerNode = null, amCloseTimer = null, amDoneTimer = null, amBorderTimer = null;
+  var openerNode = null, amBorderTimer = null;
 
   // the flagship node + its phase; clone its markup into the ghost so the ghost
   // is a pixel-exact mirror of the node's active look (title + price + CTA).
@@ -688,9 +692,27 @@
     return r;
   }
 
-  var MORPH = 'left .58s cubic-bezier(.5,.05,.2,1), top .58s cubic-bezier(.5,.05,.2,1),' +
-             'width .58s cubic-bezier(.5,.05,.2,1), height .58s cubic-bezier(.5,.05,.2,1),' +
-             'background-color .58s ease, border-color .58s ease, border-radius .58s ease, box-shadow .58s ease';
+  // ease-out (fast at the start, gentle settle) so the box eases into its final
+  // size instead of holding big and collapsing at the very end.
+  var EASE = 'cubic-bezier(.22,1,.36,1)';
+  var MORPH = 'left .6s ' + EASE + ', top .6s ' + EASE + ', width .6s ' + EASE + ', height .6s ' + EASE + ',' +
+             'background-color .5s ease, border-color .5s ease, border-radius .5s ease, box-shadow .5s ease';
+
+  // run cb exactly when the card's size morph finishes (transitionend on width),
+  // with a fallback timeout — so the hand-off happens when the box has settled,
+  // never a frame early (which would look like a size jump).
+  var morphHandler = null;
+  function cancelMorph(){
+    if (!morphHandler) return;
+    amCard.removeEventListener('transitionend', morphHandler.h);
+    clearTimeout(morphHandler.fb); morphHandler = null;
+  }
+  function afterMorph(cb){
+    cancelMorph();
+    function h(e){ if (e.target === amCard && e.propertyName === 'width'){ cancelMorph(); cb(); } }
+    morphHandler = { h: h, fb: setTimeout(function(){ cancelMorph(); cb(); }, 760) };
+    amCard.addEventListener('transitionend', h);
+  }
 
   function centreOf(el){ var r = el.getBoundingClientRect(); return { cx:r.left+r.width/2, cy:r.top+r.height/2, w:r.width, h:r.height }; }
 
@@ -709,7 +731,7 @@
   function openAcademy(node){
     openerNode = node || null;
     amOpen = true;                             // lock the sky on Academy's phase
-    clearTimeout(amCloseTimer); clearTimeout(amDoneTimer); clearTimeout(amBorderTimer);
+    cancelMorph(); clearTimeout(amBorderTimer);
     if (node) node.classList.remove('am-return');
     amodal.classList.remove('is-closing');
     amodal.classList.add('is-open');
@@ -753,15 +775,15 @@
       requestAnimationFrame(function(){ amCard.classList.add('show-content'); });
     });
 
-    amDoneTimer = setTimeout(function(){
+    afterMorph(function(){
       amCard.classList.add('is-done');         // enable inner scrolling after the morph
       if (amClose.focus) amClose.focus();
-    }, 640);
+    });
   }
 
   function closeAcademy(){
     if (!amodal.classList.contains('is-open') || amodal.classList.contains('is-closing')) return;
-    clearTimeout(amDoneTimer); clearTimeout(amCloseTimer);
+    cancelMorph();
     var node = openerNode; openerNode = null;
     amOpen = false;
     // keep the flagship node ACTIVE (price + CTA showing) so the card shrinks
@@ -798,7 +820,7 @@
       amCard.style.borderRadius = '';
       amCard.style.left = n.cx + 'px'; amCard.style.top = n.cy + 'px';
       amCard.style.width = n.w + 'px'; amCard.style.height = n.h + 'px';
-      amCloseTimer = setTimeout(finish, 580);
+      afterMorph(finish);                        // reveal the node the instant the shrink settles
     } else {
       finish();
     }

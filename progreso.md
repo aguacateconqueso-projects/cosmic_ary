@@ -324,6 +324,22 @@ Vercel redespliega solo al hacer push/merge (si el repo está conectado).
 - Verificado en Chromium (1440×900): el precio se mantiene visible durante el encogido y el nodo termina
   activo con precio (`is-active`, precio opacity 1). Cierre continuo, sin salto. Sin errores de app.
 
+### 2026-07-21 — Sesión 13 · Handoff del cierre 100% fluido (no era el borde)
+- **Feedback:** el saltito final NO era el borde; era el **tamaño de la caja / reacomodo del contenido**
+  al terminar el cierre. 4 causas corregidas:
+  1. **Contenido del ghost ≠ nodo:** el ghost tenía `gap:8px` + `padding:14/20` y el nodo usa márgenes
+     (sin gap) + `padding:16/22`. Se alineó el ghost al nodo → el contenido no se reacomoda en el handoff.
+  2. **Look base del card ≠ flagship:** el card terminaba con borde neutro y el nodo flagship es rojizo
+     + anillo. Se igualó el `.amodal__card` base al flagship (bg, borde rojo, box-shadow) → sin pop de color.
+  3. **Easing "aguanta y colapsa":** `cubic-bezier(.5,.05,.2,1)` mantenía la caja grande y la encogía de
+     golpe al final. Cambiado a **ease-out** `cubic-bezier(.22,1,.36,1)` (.6s) → el grueso del movimiento
+     es al principio y **aterriza suave**.
+  4. **`finish()` con número mágico:** se revelaba el nodo con `setTimeout` que podía dispararse un frame
+     antes de terminar el morph. Ahora se usa **`transitionend` del `width`** (`afterMorph`) → el nodo se
+     revela exactamente cuando la caja llegó a su tamaño final. Fallback a 760ms.
+- Verificado en Chromium (1440×900): `finish` dispara con el card ya en 168px (= nodo); los dos frames
+  del handoff (ghost vs nodo) son idénticos en contenido, tamaño y borde. Sin errores de app.
+
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
 - Qué se hizo
