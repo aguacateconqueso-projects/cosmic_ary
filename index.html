@@ -315,17 +315,22 @@
     /* match the node's box EXACTLY (padding 16/22, no gap — it uses margins)
        so the content doesn't shift when the card hands off to the real node */
     padding: 16px 22px; text-align: center; pointer-events: none;
-    opacity: 1; transition: opacity .28s ease;
+    /* CLOSE: the small ghost text only fades in LATE (delay), once the box has
+       shrunk near node size — so it never floats small over the big panel text */
+    opacity: 1; transition: opacity .2s ease .3s;
   }
-  .amodal__card.show-content .amodal__ghost { opacity: 0; }
+  /* OPEN: ghost fades out fast (no delay) while the box is still small */
+  .amodal__card.show-content .amodal__ghost { opacity: 0; transition: opacity .15s ease; }
   /* force the node's active state inside the ghost (price + CTA revealed) */
   .amodal__ghost .node__dot { background: #F6C7BE; box-shadow: 0 0 12px 3px rgba(192,57,43,.6); }
   .amodal__ghost .node__price { max-height: 46px; opacity: 1; transform: none; margin-top: 4px; overflow: visible; }
   .amodal__ghost .node__cta { max-height: 54px; opacity: 1; transform: none; margin-top: 6px; overflow: visible; }
 
-  /* full info — hidden until the box has grown, then fades in */
-  .amodal__content { opacity: 0; transition: opacity .3s ease; }
-  .amodal__card.show-content .amodal__content { opacity: 1; transition: opacity .5s ease .16s; }
+  /* full info — CLOSE: fades out fast/early (while box still large); OPEN: fades
+     in as the box opens (short delay) — so big and small text never clash but the
+     panel doesn't sit empty either */
+  .amodal__content { opacity: 0; transition: opacity .18s ease; }
+  .amodal__card.show-content .amodal__content { opacity: 1; transition: opacity .34s ease .15s; }
 
   .amodal__scroll {
     height: 100%; overflow: hidden;
