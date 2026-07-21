@@ -220,6 +220,25 @@ Vercel redespliega solo al hacer push (si el repo está conectado).
   scroll horizontal, sin errores. Actualiza el PR de la constelación.
 - Pendiente/siguiente: afinar arte de cielos, links reales, y el centro exacto de la estrella.
 
+### 2026-07-21 — Sesión 8 · Pulido de los botones (fuente, precios en hover, orden)
+- **Nota de flujo:** esta rama salió de un `main` viejo (modelo de dos órbitas) y chocó con el PR #12
+  (modelo "dos pantallas"). Se **rebasó sobre `main`** y se **reaplicaron las mejoras** sobre el
+  modelo nuevo de anillo único; se descartó el refactor de ángulos por órbita (ya obsoleto).
+- **Tipografía nueva:** el wordmark **CosmicAry** sigue en **Fraunces**. Se cambió a **Jost**
+  (geométrica, aireada, celestial) para: **tagline del hero**, **títulos de los nodos**, **CTAs** y
+  UI. Los títulos pasan de Fraunces serif 17px a etiquetas Jost en mayúsculas tracked → look boutique.
+- **Precios ocultos por defecto → protagonistas en hover:** el precio ya **no se ve** en reposo; al
+  hover/focus (desktop) o al centrarse en scroll (móvil) **florece grande** en **Fraunces 27px**
+  junto al CTA.
+- **Info centrada:** confirmado `align-items:center` + `text-align:center` en `.node`.
+- **Reorden en el anillo:** **Awakening Academy** movida al **índice 0 → arriba al centro** (con su
+  anillo flagship) y lidera también el stack móvil. **Purpose Masterclass** al índice 3 (donde estaba
+  Academy). El resto de nodos conservan su posición. Cada oferta mantiene su propia fase de cielo, así
+  que el barrido por el anillo ya **no** es de precio estrictamente ascendente (decisión aceptada).
+- Verificado en Chromium (1440×900 desplegado + hover, y 390×844 móvil): sin errores de app, precios
+  ocultos→visibles OK, cielo cambia de fase, orden correcto.
+- Pendiente/siguiente: afinar arte de los 7 cielos y links reales.
+
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
 - Qué se hizo
