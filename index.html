@@ -305,9 +305,14 @@
     display: flex; align-items: center; justify-content: center;
     background: rgba(12,14,26,.55); color: rgba(242,237,228,.85);
     border: 1px solid rgba(242,237,228,.18);
-    font-size: 22px; line-height: 1; cursor: pointer;
+    cursor: pointer;
     -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
     transition: background .25s ease, color .25s ease, transform .35s ease, border-color .25s ease;
+  }
+  /* SVG glyph (not a text ×) so it's geometrically centred and stays centred while it rotates */
+  .amodal__close svg {
+    display: block; width: 15px; height: 15px;
+    fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round;
   }
   .amodal__close:hover {
     background: rgba(192,57,43,.5); color: #fff;
@@ -438,7 +443,9 @@
   <div class="amodal" id="academyModal" aria-hidden="true">
     <div class="amodal__backdrop" data-close></div>
     <div class="amodal__card" role="dialog" aria-modal="true" aria-labelledby="amodalTitle">
-      <button class="amodal__close" id="amodalClose" type="button" aria-label="Close">&times;</button>
+      <button class="amodal__close" id="amodalClose" type="button" aria-label="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6 18 18M18 6 6 18"/></svg>
+      </button>
       <div class="amodal__scroll" tabindex="-1">
        <div class="amodal__content">
         <h2 class="amodal__title" id="amodalTitle">Awakening Academy</h2>
