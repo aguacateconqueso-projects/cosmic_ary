@@ -466,6 +466,23 @@ Vercel redespliega solo al hacer push/merge (si el repo está conectado).
   integran con el cielo; botón cerrar neutro. Sin errores.
 - Pendiente/siguiente: afinar arte de los 7 cielos y links reales cuando se pasen.
 
+### 2026-07-22 — Sesión 21 · Ajustes del hero (identidad + tagline + brillo)
+- **Bloque de identidad (eyebrow):** bajo **Ariana Del Rosario** se añadió una segunda línea
+  **"Transformational Mentor"** (más pequeña y tenue). El `.eyebrow` pasó a contenedor con
+  `.eyebrow__name` + `.eyebrow__role`. **CosmicAry** se deja igual.
+- **Tagline más aireado y grande:** separación del wordmark de `20px` → `40px` y tamaño de
+  `clamp(10,2.1vw,13)` → `clamp(13,2.7vw,17)`.
+- **"dream life" brilla con el borde arcoíris de los cards:** envuelto en `<span class="glow">` con
+  gradiente de texto que usa **los mismos colores del `conic-gradient` del `.node::before`**
+  (`#ff4d8d, #ff9a3d, #ffe14d, #4dffa6, #4dc7ff, #a06bff`) + doble `drop-shadow` de glow y un
+  shimmer lento (`glowShift 7s`) desactivado con `prefers-reduced-motion`.
+- **Nota de flujo:** la rama salió de un `main` viejo (pre‑rainbow border / pre‑CTA azul); se
+  **rebasó sobre `origin/main`**, se resolvió el conflicto de `progreso.md` y se ajustó el glow para
+  igualar el borde real de los cards del `main` actual.
+- Verificado en Chromium (1440×900 y 390×844): sin errores; en móvil el tagline envuelve a dos
+  líneas de forma limpia con "DREAM LIFE" resaltado.
+- Rama: `claude/hero-adjustments-y3jsfz`. Pendiente/siguiente: arte de los 7 cielos y links reales.
+
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
 - Qué se hizo

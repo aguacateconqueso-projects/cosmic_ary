@@ -74,9 +74,16 @@
   }
   .eyebrow {
     position: fixed; top: 26px; left: 0; right: 0; z-index: 5;
-    margin: 0; font-size: 11px; letter-spacing: .34em; text-transform: uppercase;
-    color: rgba(242,237,228,.55); text-align: center; pointer-events: none;
+    margin: 0; text-align: center; pointer-events: none;
     will-change: opacity;
+  }
+  .eyebrow__name {
+    margin: 0; font-size: 11px; letter-spacing: .34em; text-transform: uppercase;
+    color: rgba(242,237,228,.55);
+  }
+  .eyebrow__role {
+    margin: 5px 0 0; font-size: 9.5px; letter-spacing: .4em; text-transform: uppercase;
+    color: rgba(242,237,228,.4);
   }
   /* scroll hint on the hero (desktop only) — fades as the constellation deploys */
   .scrollcue {
@@ -94,10 +101,27 @@
     color: var(--cream); text-shadow: 0 2px 60px rgba(11,14,26,.75);
   }
   .tagline {
-    margin: 20px 0 0; font-family: Jost, sans-serif; font-weight: 300;
+    margin: 40px 0 0; font-family: Jost, sans-serif; font-weight: 300;
     text-transform: uppercase; letter-spacing: .34em;
-    font-size: clamp(10px,2.1vw,13px); color: rgba(242,237,228,.7);
+    font-size: clamp(13px,2.7vw,17px); color: rgba(242,237,228,.7);
     text-shadow: 0 1px 20px rgba(11,14,26,.6);
+  }
+  /* "dream life" glows in the SAME rainbow as the card border (.node::before conic) */
+  .tagline .glow {
+    background: linear-gradient(100deg,
+      #ff4d8d, #ff9a3d, #ffe14d, #4dffa6, #4dc7ff, #a06bff, #ff4d8d);
+    background-size: 220% 100%;
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+    filter: drop-shadow(0 0 10px rgba(255,77,141,.4)) drop-shadow(0 0 20px rgba(77,199,255,.3));
+    animation: glowShift 7s ease-in-out infinite;
+  }
+  @keyframes glowShift {
+    0%,100% { background-position: 0% 50%; }
+    50%     { background-position: 100% 50%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tagline .glow { animation: none; background-position: 50% 50%; }
   }
 
   /* ---- constellation of offers ---- */
@@ -420,11 +444,14 @@
   <div id="grain" aria-hidden="true"></div>
   <svg id="lines" aria-hidden="true"></svg>
 
-  <p class="eyebrow">Ariana Del Rosario</p>
+  <div class="eyebrow">
+    <p class="eyebrow__name">Ariana Del Rosario</p>
+    <p class="eyebrow__role">Transformational Mentor</p>
+  </div>
 
   <div class="stage">
     <h1 class="wordmark">CosmicAry</h1>
-    <p class="tagline">Reprogram your mind &amp; create your dream life</p>
+    <p class="tagline">Reprogram your mind &amp; create your <span class="glow">dream life</span></p>
   </div>
 
   <p class="scrollcue" id="scrollcue" aria-hidden="true">Scroll<span>&#8964;</span></p>
