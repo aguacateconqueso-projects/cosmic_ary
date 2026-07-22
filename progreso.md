@@ -437,6 +437,18 @@ Vercel redespliega solo al hacer push/merge (si el repo está conectado).
   emojis, viñetas de punto, sin errores.
 - Pendiente/siguiente: afinar arte de los 7 cielos y links reales cuando se pasen.
 
+### 2026-07-22 — Sesión 19 · Botón de cierre del modal: "×" siempre centrada
+- **Problema:** el botón `.amodal__close` usaba el glifo de texto `&times;` centrado por flexbox. El
+  glifo no coincide con el centro óptico de su caja de línea, así que al `hover` (`transform:rotate(90deg)`)
+  el desfase se hacía visible y la "×" se veía corrida del centro del círculo.
+- **Fix:** se reemplazó el glifo por una **"×" en SVG** (dos líneas cruzadas centradas en un viewBox
+  `0 0 24 24`, `stroke=currentColor`, round caps). Al ser geométricamente simétrica y centrada por el
+  flex del botón, **queda en el centro en reposo y rotada**. Se quitó `font-size/line-height` (ya no
+  se usan). El JS no lee el texto del botón, así que el cambio es transparente.
+- Verificado en Chromium: centro del botón == centro del SVG (idénticos) también con `rotate(90deg)`;
+  capturas de reposo y hover confirman "×" centrada.
+- Pendiente/siguiente: afinar arte de los 7 cielos y links reales cuando se pasen.
+
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
 - Qué se hizo
