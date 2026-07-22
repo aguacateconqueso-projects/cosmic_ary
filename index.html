@@ -16,7 +16,9 @@
   :root {
     --cosmos: #0B0E1A;
     --cream: #F2EDE4;
-    --accent: #C0392B;
+    --accent: #5B6BE6;   /* action colour: cosmic violet-blue (red reads as "delete/danger") */
+    --cta: linear-gradient(120deg, #6E49E6, #4F72E6 58%, #46A3DE);   /* CTA gradient, from the sky family */
+    --cta-glow: 86, 100, 232;   /* rgb for CTA glows */
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; min-height: 100%; }
@@ -160,21 +162,21 @@
     display: inline-flex; align-items: center; gap: 7px;
     font-family: Jost, sans-serif; font-size: 12px; font-weight: 500;
     text-transform: uppercase; letter-spacing: .12em;
-    color: var(--cream); background: var(--accent);
+    color: #fff; background: var(--cta);
     padding: 0 17px; border-radius: 999px;
     max-height: 0; opacity: 0; transform: translateY(4px);
     overflow: hidden;
     transition: max-height .35s ease, padding .35s ease, opacity .3s ease, transform .3s ease, margin .35s ease;
-    box-shadow: 0 6px 22px rgba(192,57,43,.35);
+    box-shadow: 0 6px 22px rgba(var(--cta-glow), .35);
   }
   .node__cta svg { width: 13px; height: 13px; }
 
   /* flagship gets a subtle luminous ring */
   .node--flagship {
-    border-color: rgba(192,57,43,.45);
-    box-shadow: 0 0 0 1px rgba(192,57,43,.25), 0 10px 40px rgba(11,14,26,.4);
+    border-color: rgba(var(--cta-glow), .5);
+    box-shadow: 0 0 0 1px rgba(var(--cta-glow), .3), 0 10px 40px rgba(11,14,26,.4);
   }
-  .node--flagship .node__dot { background: #F6C7BE; box-shadow: 0 0 12px 3px rgba(192,57,43,.6); }
+  .node--flagship .node__dot { background: #C7D0FF; box-shadow: 0 0 12px 3px rgba(var(--cta-glow), .6); }
 
   /* active state — hover / focus / centered-on-scroll */
   .node.is-active, .node:hover, .node:focus-within {
@@ -282,7 +284,7 @@
     background: rgba(13,15,27,.85);
     -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px);
     border: 1px solid rgba(242,237,228,.16);
-    box-shadow: 0 30px 90px rgba(0,0,0,.55), 0 0 0 1px rgba(192,57,43,.18),
+    box-shadow: 0 30px 90px rgba(0,0,0,.55), 0 0 0 1px rgba(var(--cta-glow), .18),
                 inset 0 1px 0 rgba(242,237,228,.06);
     /* fade + subtle scale/lift — the ONLY animation on the card */
     opacity: 0; transform: scale(.955) translateY(10px); transform-origin: center center;
@@ -315,8 +317,8 @@
     fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round;
   }
   .amodal__close:hover {
-    background: rgba(192,57,43,.5); color: #fff;
-    border-color: rgba(192,57,43,.6); transform: rotate(90deg);
+    background: rgba(242,237,228,.14); color: #fff;
+    border-color: rgba(242,237,228,.4); transform: rotate(90deg);
   }
   .amodal__close:focus-visible { outline: 2px solid rgba(242,237,228,.7); outline-offset: 2px; }
 
@@ -361,15 +363,15 @@
     margin-top: 28px; padding: 17px 24px; border-radius: 999px;
     font-family: Jost, sans-serif; font-weight: 600; font-size: 14px;
     letter-spacing: .2em; text-transform: uppercase; color: #fff;
-    background: linear-gradient(120deg, #8B1A1A, #C0392B 50%, #9E2422);
+    background: var(--cta);
     background-size: 200% 100%; background-position: 0 0;
-    box-shadow: 0 14px 40px rgba(192,57,43,.4);
+    box-shadow: 0 14px 40px rgba(var(--cta-glow), .4);
     position: relative; overflow: hidden;
     transition: transform .3s ease, box-shadow .3s ease, background-position .6s ease;
   }
   .amodal__join:hover {
     transform: translateY(-2px) scale(1.015);
-    box-shadow: 0 18px 54px rgba(192,57,43,.55); background-position: 100% 0;
+    box-shadow: 0 18px 54px rgba(var(--cta-glow), .55); background-position: 100% 0;
   }
   .amodal__join:focus-visible { outline: 2px solid rgba(242,237,228,.8); outline-offset: 3px; }
   .amodal__join::after {
