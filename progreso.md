@@ -374,6 +374,21 @@ Vercel redespliega solo al hacer push/merge (si el repo está conectado).
 - **Nota:** headless corre a ~5fps y transitionend puede tardar; se bajó el fallback de `afterMorph` a
   `DUR+140ms`. En navegador real (60fps) se ve mucho más fluido que en las pruebas.
 
+### 2026-07-22 — Sesión 16 · El solapamiento real de 30ms (por fin el salto de texto)
+- La secuencia de 3 fases (Sesión 15, #25) **seguía saltando** para el usuario. Encontrado el culpable
+  real: **solapamiento de ~30ms** entre fases. En el cierre, el texto tardaba .18s en desvanecerse pero
+  el shrink arrancaba a los 150ms → durante ~30ms el texto grande (aún ~15% visible) coexistía con la
+  caja empezando a encoger. A 60fps son ~2 frames de salto; a 5fps del headless era **invisible en las
+  pruebas** (por eso lo di por bueno).
+- **Fix:** gaps limpios sin solapamiento. Texto .15s; el resize (open grow / close shrink) **espera a
+  que el texto esté 100% desvanecido** (+30ms de buffer) antes de arrancar; y el `finish` espera a que
+  el ghost esté 100% visible antes del handoff. Resize .4s.
+- **Verificación clave (nueva técnica):** copia con tiempos **4× lentos** para muestrear a 5fps. Frame a
+  media transición (w=352px): **content=0 y ghost=0** → caja **completamente vacía**, confirmado por
+  lectura de opacidades y por captura. Ya no hay ningún frame con texto durante el resize.
+- Nota de test: el server sirve desde la raíz del repo, no desde scratchpad (la copia lenta debe ir a
+  la raíz temporalmente y borrarse — NO commitear `slow.html`).
+
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
 - Qué se hizo

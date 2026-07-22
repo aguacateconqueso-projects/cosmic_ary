@@ -317,7 +317,7 @@
     padding: 16px 22px; text-align: center; pointer-events: none;
     /* hidden by default; JS shows it ONLY while the box is at node size (never
        during the resize) so the small text never coexists with the big text */
-    opacity: 0; transition: opacity .16s ease;
+    opacity: 0; transition: opacity .15s ease;
   }
   .amodal__card.show-ghost .amodal__ghost { opacity: 1; }
   /* force the node's active state inside the ghost (price + CTA revealed) */
@@ -327,7 +327,7 @@
 
   /* full info — hidden by default; JS shows it ONLY while the box is at panel
      size (never during the resize), so big and small text never coexist */
-  .amodal__content { opacity: 0; transition: opacity .18s ease; }
+  .amodal__content { opacity: 0; transition: opacity .15s ease; }
   .amodal__card.show-content .amodal__content { opacity: 1; }
 
   .amodal__scroll {
@@ -698,7 +698,7 @@
   // ease-out for the box resize. The resize is its OWN phase now (empty box —
   // text has already faded), so this only animates geometry + colours, cleanly.
   var EASE = 'cubic-bezier(.33,1,.68,1)';
-  var DUR = 0.42;
+  var DUR = 0.4;
   var MORPH = 'left ' + DUR + 's ' + EASE + ', top ' + DUR + 's ' + EASE + ', width ' + DUR + 's ' + EASE + ', height ' + DUR + 's ' + EASE + ',' +
              'background-color ' + DUR + 's ease, border-color ' + DUR + 's ease, border-radius ' + DUR + 's ease, box-shadow ' + DUR + 's ease';
 
@@ -774,11 +774,12 @@
     amGhost.style.transition = '';             // restore fade for the way out
 
     // PHASE 1 — hold the node's text a beat (continuity), then fade it OUT
-    // while the box is still node size.
+    // while the box is still node size.  (ghost fade = .15s)
     amPhaseTimer = setTimeout(function(){
       amCard.classList.remove('show-ghost');
 
-      // PHASE 2 — once the text is gone, grow the EMPTY box to the panel.
+      // PHASE 2 — wait until the ghost is FULLY gone (no overlap), then grow
+      // the EMPTY box to the panel.
       amPhaseTimer = setTimeout(function(){
         amCard.style.transition = MORPH;
         amCard.classList.add('is-expanded');
@@ -786,13 +787,13 @@
         amCard.style.left = '50%'; amCard.style.top = '50%';
         amCard.style.width = g.w + 'px'; amCard.style.height = g.h + 'px';
 
-        // PHASE 3 — box settled at panel size: fade the info IN.
+        // PHASE 3 — box settled at panel size: NOW fade the info IN.
         afterMorph(function(){
           amCard.classList.add('show-content', 'is-done');
           if (amClose.focus) amClose.focus();
         });
-      }, 160);
-    }, 110);
+      }, 180);   // 150ms ghost fade + 30ms buffer
+    }, 60);
   }
 
   function closeAcademy(){
@@ -838,7 +839,8 @@
     // PHASE 1 — fade the big panel text OUT while the box is still panel size.
     amCard.classList.remove('show-content');
 
-    // PHASE 2 — once the text is gone, shrink the EMPTY box to node size.
+    // PHASE 2 — wait until the text is FULLY gone (no overlap), then shrink the
+    // EMPTY box to node size.
     amPhaseTimer = setTimeout(function(){
       amCard.style.transition = MORPH;
       amCard.classList.remove('is-expanded');
@@ -847,12 +849,12 @@
       amCard.style.width = n.w + 'px'; amCard.style.height = n.h + 'px';
 
       // PHASE 3 — box settled at node size: fade the node's text IN, then hand
-      // off to the real node (identical), so the text appears already at final size.
+      // off to the real node (identical) once it's fully in.
       afterMorph(function(){
         amCard.classList.add('show-ghost');
-        amPhaseTimer = setTimeout(finish, 150);
+        amPhaseTimer = setTimeout(finish, 180);   // after the .15s ghost fade-in
       });
-    }, 150);
+    }, 180);   // 150ms content fade + 30ms buffer
   }
 
   amClose.addEventListener('click', closeAcademy);
