@@ -418,6 +418,25 @@ Vercel redespliega solo al hacer push/merge (si el repo está conectado).
 - **✅ APROBADO por el usuario** ("Bien! Funciona, gracias"). PR **#27** mergeado. Modal de Academy
   cerrado como feature. Siguiente sesión: temas nuevos (afinar cielos y/o links reales cuando se pasen).
 
+### 2026-07-22 — Sesión 18 · Formato del modal de Awakening Academy (nombre, precio, sin emojis)
+- **Encabezado del modal como nombre propio:** antes el modal abría con eyebrow "Awakening" (chico,
+  arriba) + título "Academy" (grande, abajo) en **dos líneas**. Se fusionó en **"Awakening Academy"**
+  en **una sola línea, bold (700)**, Fraunces `clamp(28px,5.4vw,38px)` con `white-space:nowrap`.
+  Eliminado el `.amodal__eyebrow` (HTML + CSS).
+- **Precio visible (bug de especificidad):** `.amodal__price` (0-1-0) **perdía** contra
+  `.amodal p { font-size:15px }` (0-1-1), así que el precio se renderizaba a **15px** sin importar lo
+  que dijera su regla (por eso "se perdía"). Se subió la especificidad → `.amodal p.amodal__price` a
+  **31px** (weight 500). Ahora sí destaca bajo el nombre.
+- **Emojis fuera:** quitados `✨` de "What's included" y `🖤` del bullet "join or cancel whenever".
+  Las viñetas `✦` de la lista se cambiaron por un **punto CSS** (sin ningún glifo) para no dejar
+  decoración tipo emoji. Escaneo Unicode: 0 emojis en el archivo.
+- **Nota de flujo (importante):** esta rama había salido de un `main` viejo (pre-modal); el primer
+  intento tocó por error el **nodo** en vez del **modal** y chocó (PR #29 quedó *dirty*). Se **reseteó
+  la rama sobre `origin/main`** y se reaplicaron los 3 cambios sobre el modal real.
+- Verificado en Chromium (1440×900 y 390×844): título 1 línea (38/28px, 700), precio 31px, sin
+  emojis, viñetas de punto, sin errores.
+- Pendiente/siguiente: afinar arte de los 7 cielos y links reales cuando se pasen.
+
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
 - Qué se hizo
