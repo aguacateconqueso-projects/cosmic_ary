@@ -449,6 +449,23 @@ Vercel redespliega solo al hacer push/merge (si el repo está conectado).
   capturas de reposo y hover confirman "×" centrada.
 - Pendiente/siguiente: afinar arte de los 7 cielos y links reales cuando se pasen.
 
+### 2026-07-22 — Sesión 20 · CTAs de rojo → gradiente cósmico (azul/violeta)
+- **Motivo:** el rojo como color de acción tiene carga de "borrar / peligro / stop" y no invita a
+  clicar; además era el único elemento fuera de la gama azul‑violeta‑magenta del cielo. Se cambian los
+  **botones de acción** a un gradiente violeta→azul de la familia del fondo. El rojo de marca no aplica
+  aquí (el wordmark ya era crema, no rojo).
+- **Tokens nuevos en `:root`:** `--accent: #5B6BE6` (violet‑blue sólido para UI chica), `--cta:
+  linear-gradient(120deg,#6E49E6,#4F72E6 58%,#46A3DE)` y `--cta-glow: 86,100,232` (rgb para glows).
+- **Aplicado a:** `.node__cta` (JOIN/GET/… ahora gradiente + glow azul) y `.amodal__join` ("Become a
+  Member", gradiente + glow, conserva el slide de background-position y el brillo `::after`).
+- **Acentos decorativos rojos → mismo tono** para coherencia: anillo y punto del flagship, glow inset
+  del `.amodal__card`, y el **hover del botón cerrar** (era rojo → ahora glass neutro, para no
+  reintroducir un botón rojo). Punto del flagship de `#F6C7BE` → `#C7D0FF`.
+- Escaneo: **0 rojos** (`192,57,43`/`C0392B`/`8B1A1A`/`9E2422`) restantes.
+- Verificado en Chromium: botón del modal y CTA del nodo con gradiente azul/violeta, glow suave, se
+  integran con el cielo; botón cerrar neutro. Sin errores.
+- Pendiente/siguiente: afinar arte de los 7 cielos y links reales cuando se pasen.
+
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
 - Qué se hizo
