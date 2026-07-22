@@ -46,19 +46,27 @@ README.md       Doc de instalación/deploy
 
 ## 2. Estado actual
 
-**Fase:** 🎨 Demo "cool" (aura) es el home. Constelación de ofertas + cielos + botones pulidos, todo en `main`.
+**Fase:** 🎨 Demo "cool" (aura) es el home. Constelación + cielos + botones + **modal de Awakening Academy** (centrado), todo en `main`.
 
 - [x] Diseño importado desde Claude Design
 - [x] Demo "sobrio" (rojo) implementado — ahora **reservado**
 - [x] **Aura promovida a home** (`index.html`)
 - [x] **Constelación de CTAs** + **sistema de cielos/fases** (modelo "dos pantallas": scroll despliega los nodos en círculo)
 - [x] **Botones pulidos:** fuente Jost, precios ocultos que florecen en hover, Academy arriba al centro, tarjetas compactas (sin espacio muerto), borde arcoíris giratorio en hover
+- [x] **Modal de Awakening Academy** — click en el nodo flagship abre un **modal centrado** (fade + scale
+  suave, backdrop glass) con toda la info de la oferta + CTA "Become a Member". **Aprobado y fluido.**
 - [ ] Afinar arte de los 7 cielos
 - [ ] Enlaces reales (YouTube/IG/TikTok/Spotify/podcast) — hoy `#` placeholder
+- [ ] (Opcional) modales para el resto de ofertas si se decide replicar el patrón
 
-**PRs recientes mergeados:** #12 (dos pantallas), #13 (botones: fuente/precios/orden), #15 (tarjetas compactas + arcoíris + regla de flujo).
-**Sin PRs abiertos.** Último `main`: constelación completa y botones pulidos.
+**PRs recientes mergeados:** #12 (dos pantallas), #13/#15 (botones), #17→#27 (modal de Academy: primero
+con morph, iterado ~6 veces por el salto de texto, y finalmente resuelto pasando a **modal centrado** en #27).
+**Sin PRs abiertos.** Último `main`: modal de Academy centrado, aprobado.
 **URL de producción (Vercel):** `⟶ PENDIENTE: pega aquí la URL del deploy`
+
+> 💡 **Aprendizaje clave (modal):** un "shared-element morph" entre dos textos distintos (título grande
+> serif del panel ↔ etiqueta chica sans del nodo) **siempre** se lee como salto de tamaño, por más que se
+> secuencie. Para info que cambia de layout, **modal centrado con fade** > morph. No reabrir el morph.
 
 ---
 
@@ -407,6 +415,8 @@ Vercel redespliega solo al hacer push/merge (si el repo está conectado).
 - Al abrir se mantiene el cielo en la fase Academy (setPhase); al cerrar vuelve a noche.
 - Verificado en Chromium (1440×900 y 390×844): abre/cierra OK, fade+scale suave, se oculta del
   tab-order tras el fade, contenido legible, sin errores. Sin morph = sin salto posible.
+- **✅ APROBADO por el usuario** ("Bien! Funciona, gracias"). PR **#27** mergeado. Modal de Academy
+  cerrado como feature. Siguiente sesión: temas nuevos (afinar cielos y/o links reales cuando se pasen).
 
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
