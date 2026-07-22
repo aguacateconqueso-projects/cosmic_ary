@@ -353,6 +353,27 @@ Vercel redespliega solo al hacer push/merge (si el repo está conectado).
 - Verificado en Chromium (1440×900) con filmstrips de open y close: no hay texto chico flotando sobre el
   panel grande, ni panel vacío; el cierre lee panel→(se desvanece)→encoge→etiqueta del nodo. Sin errores.
 
+### 2026-07-22 — Sesión 15 · Fin del salto de texto: crossfade → secuencia de 3 fases
+- **Diagnóstico honesto:** el salto de "tamaño de letra" NO era timing; era **de raíz**. El panel usa
+  "Academy" (Fraunces 42px) y el nodo "AWAKENING ACADEMY" (Jost 12.5px): textos, fuentes y tamaños
+  distintos. Cualquier crossfade por opacidad hace que en algún punto un texto chico y uno grande
+  coexistan en la misma caja mientras cambia de tamaño → siempre se lee como salto. Se dejó de
+  parchar con timing.
+- **Solución — 3 fases secuenciadas (el texto NUNCA se mueve mientras la caja cambia de tamaño):**
+  1. el texto saliente se desvanece con la **caja quieta**;
+  2. la **caja vacía** cambia de tamaño (sin texto);
+  3. el texto entrante aparece **ya en el tamaño final**.
+  Implementado con dos clases independientes `show-ghost` / `show-content` (antes era un solo toggle),
+  orquestadas por JS con timers de fase + `afterMorph` (transitionend). El ghost al abrir se muestra
+  **instantáneo** (sin fade, `transition:none` + reflow) para dar continuidad con el nodo, se sostiene
+  un beat (110ms) y luego se desvanece antes de crecer.
+- Easing del resize: `cubic-bezier(.33,1,.68,1)` .42s (ahora anima caja vacía, sin texto que distorsione).
+- Verificado en Chromium (1440×900): frame a media transición = **caja completamente vacía** (sin
+  texto); 3 ciclos open/close consecutivos OK (open→560px, close→168px, cerrado), nodo termina activo
+  con precio. Sin errores de app.
+- **Nota:** headless corre a ~5fps y transitionend puede tardar; se bajó el fallback de `afterMorph` a
+  `DUR+140ms`. En navegador real (60fps) se ve mucho más fluido que en las pruebas.
+
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
 - Qué se hizo
