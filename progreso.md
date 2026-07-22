@@ -389,6 +389,25 @@ Vercel redespliega solo al hacer push/merge (si el repo está conectado).
 - Nota de test: el server sirve desde la raíz del repo, no desde scratchpad (la copia lenta debe ir a
   la raíz temporalmente y borrarse — NO commitear `slow.html`).
 
+### 2026-07-22 — Sesión 17 · CAMBIO DE DIRECCIÓN: modal centrado (se abandona el morph)
+- Tras ~6 intentos de pulir el morph "el card crece desde el nodo", el salto de tamaño de texto
+  **seguía** (aun con la caja vacía verificada). **Conclusión honesta:** el morph es la causa — hacer
+  que el título grande del panel (Fraunces 42px) se convierta en el chico del nodo (Jost 12.5px)
+  durante un cambio de tamaño **siempre** se lee como salto. Se le explicó al usuario y **eligió**
+  (AskUserQuestion) la opción práctica: **modal centrado (fade + scale suave)**.
+- **Reescritura completa del modal:** se ELIMINÓ todo el morph (ghost, fases, `stableRect`,
+  `afterMorph`/transitionend, `finalGeom`, `MORPH`, clases `is-expanded`/`show-ghost`/`show-content`/
+  `is-done`/`am-return`, timers de fase). Ahora es un **modal centrado estándar**: `.amodal` con flex
+  center; `.amodal__card` hace **fade (opacity) + scale sutil (.955→1) + lift (10px→0)** con
+  `cubic-bezier(.22,1,.36,1)`. El backdrop glass deja ver la estrella. El contenido aparece **ya a su
+  tamaño final** (solo fade) → **imposible que el texto salte**.
+- Show/hide: `.is-open` (visible) / `.is-fading` (sigue visible durante el fade-out) + timer 440ms que
+  quita `is-fading` para salir del tab-order. Cerrar: `x`, `Esc`, click en backdrop. En móvil el modal
+  es full-screen.
+- Al abrir se mantiene el cielo en la fase Academy (setPhase); al cerrar vuelve a noche.
+- Verificado en Chromium (1440×900 y 390×844): abre/cierra OK, fade+scale suave, se oculta del
+  tab-order tras el fade, contenido legible, sin errores. Sin morph = sin salto posible.
+
 <!-- Plantilla para la próxima entrada:
 ### AAAA-MM-DD — Sesión N · Título
 - Qué se hizo

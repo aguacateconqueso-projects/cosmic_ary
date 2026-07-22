@@ -146,10 +146,6 @@
   .node.is-active::before, .node:hover::before, .node:focus-within::before {
     opacity: .85; animation: nodeSpin 4.5s linear infinite;
   }
-  /* when the node is revealed as the modal closes, snap the rainbow border off
-     instantly (transition:none) and hold it; removing the class lets it fade in
-     via the base .4s transition — so it eases in instead of popping at full */
-  .node.am-return::before { opacity: 0; transition: none; }
   @keyframes nodeSpin { to { --nodeAngle: 360deg; } }
   /* price stays hidden until the node is active, then blooms as the hero element */
   .node__price {
@@ -257,84 +253,48 @@
   }
 
   /* ============================================================
-     Awakening Academy — expanded modal
-     Click the flagship node -> the card grows and glides to the
-     centre (FLIP), over a glass backdrop so the moving star stays
-     visible but the copy is fully legible.
+     Awakening Academy — centred modal (fade + subtle scale)
+     Click the flagship node -> a centred glass panel fades in at its
+     final size (no size morph of any text, so nothing can "jump").
+     The moving star stays visible through the glass backdrop.
      ============================================================ */
   .amodal {
     position: fixed; inset: 0; z-index: 30;
-    visibility: hidden; pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    visibility: hidden; pointer-events: none;   /* out of tab order when closed */
   }
   .amodal.is-open { visibility: visible; pointer-events: auto; }
-  /* while closing we keep the modal VISIBLE (so the shrink-back morph shows)
-     but stop taking clicks and fade the backdrop out */
-  .amodal.is-closing { pointer-events: none; }
+  .amodal.is-fading { visibility: visible; }    /* stay visible through the fade-out */
   .amodal__backdrop {
     position: absolute; inset: 0;
-    background: rgba(8,10,20,.42);
+    background: rgba(8,10,20,.44);
     -webkit-backdrop-filter: blur(7px) saturate(1.1);
     backdrop-filter: blur(7px) saturate(1.1);
-    opacity: 0; transition: opacity .55s ease;
+    opacity: 0; transition: opacity .4s ease;
   }
   .amodal.is-open .amodal__backdrop { opacity: 1; }
-  .amodal.is-closing .amodal__backdrop { opacity: 0; }
 
-  /* the card IS the node — it starts sized/placed exactly over the node
-     (node look) and morphs to the centred glass panel. JS drives geometry;
-     these two states define the look at each end of the morph. */
   .amodal__card {
-    position: fixed; z-index: 1;
-    left: 50%; top: 50%; width: 168px; height: 80px;
-    transform: translate(-50%, -50%); transform-origin: center center;
-    overflow: hidden; border-radius: 18px;
-    /* node-look end of the morph: match the FLAGSHIP node exactly (bg, red
-       border + ring) so the hand-off to the real node has no colour pop */
-    background: rgba(12,14,26,.5);
-    border: 1px solid rgba(192,57,43,.45);
-    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-    box-shadow: 0 0 0 1px rgba(192,57,43,.25), 0 10px 40px rgba(11,14,26,.4);
-    will-change: left, top, width, height;
-  }
-  .amodal__card.is-expanded {
-    background: rgba(13,15,27,.82);
-    border-color: rgba(242,237,228,.16);
-    border-radius: 26px;
+    position: relative; z-index: 1;
+    width: 100%; max-width: 560px; max-height: 90vh;
+    overflow: hidden; border-radius: 26px;
+    background: rgba(13,15,27,.85);
     -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px);
+    border: 1px solid rgba(242,237,228,.16);
     box-shadow: 0 30px 90px rgba(0,0,0,.55), 0 0 0 1px rgba(192,57,43,.18),
                 inset 0 1px 0 rgba(242,237,228,.06);
+    /* fade + subtle scale/lift — the ONLY animation on the card */
+    opacity: 0; transform: scale(.955) translateY(10px); transform-origin: center center;
+    transition: opacity .32s ease, transform .4s cubic-bezier(.22,1,.36,1);
+    will-change: opacity, transform;
   }
-
-  /* ghost = an exact mirror of the flagship node in its ACTIVE look
-     (title + price + CTA). It's what the card shows while small, so the
-     price is present through the whole morph — no jump on open or close.
-     JS clones the node's markup in, so it reuses the .node__* styles. */
-  .amodal__ghost {
-    position: absolute; inset: 0; z-index: 2;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    /* match the node's box EXACTLY (padding 16/22, no gap — it uses margins)
-       so the content doesn't shift when the card hands off to the real node */
-    padding: 16px 22px; text-align: center; pointer-events: none;
-    /* hidden by default; JS shows it ONLY while the box is at node size (never
-       during the resize) so the small text never coexists with the big text */
-    opacity: 0; transition: opacity .15s ease;
-  }
-  .amodal__card.show-ghost .amodal__ghost { opacity: 1; }
-  /* force the node's active state inside the ghost (price + CTA revealed) */
-  .amodal__ghost .node__dot { background: #F6C7BE; box-shadow: 0 0 12px 3px rgba(192,57,43,.6); }
-  .amodal__ghost .node__price { max-height: 46px; opacity: 1; transform: none; margin-top: 4px; overflow: visible; }
-  .amodal__ghost .node__cta { max-height: 54px; opacity: 1; transform: none; margin-top: 6px; overflow: visible; }
-
-  /* full info — hidden by default; JS shows it ONLY while the box is at panel
-     size (never during the resize), so big and small text never coexist */
-  .amodal__content { opacity: 0; transition: opacity .15s ease; }
-  .amodal__card.show-content .amodal__content { opacity: 1; }
+  .amodal.is-open .amodal__card { opacity: 1; transform: none; }
 
   .amodal__scroll {
-    height: 100%; overflow: hidden;
+    max-height: 90vh; overflow-y: auto;
     padding: 42px 38px 34px; -webkit-overflow-scrolling: touch;
   }
-  .amodal__card.is-done .amodal__scroll { overflow-y: auto; }
   .amodal__scroll::-webkit-scrollbar { width: 8px; }
   .amodal__scroll::-webkit-scrollbar-thumb { background: rgba(242,237,228,.18); border-radius: 8px; }
   .amodal__scroll::-webkit-scrollbar-track { background: transparent; }
@@ -347,10 +307,8 @@
     border: 1px solid rgba(242,237,228,.18);
     font-size: 22px; line-height: 1; cursor: pointer;
     -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-    opacity: 0; pointer-events: none;
-    transition: background .25s ease, color .25s ease, transform .35s ease, border-color .25s ease, opacity .3s ease;
+    transition: background .25s ease, color .25s ease, transform .35s ease, border-color .25s ease;
   }
-  .amodal__card.show-content .amodal__close { opacity: 1; pointer-events: auto; }
   .amodal__close:hover {
     background: rgba(192,57,43,.5); color: #fff;
     border-color: rgba(192,57,43,.6); transform: rotate(90deg);
@@ -420,7 +378,9 @@
   @keyframes joinShine { 0%, 100% { left: -60%; } 55% { left: 132%; } }
 
   @media (max-width: 520px) {
-    .amodal__scroll { padding: 62px 24px 40px; }
+    .amodal { padding: 0; }
+    .amodal__card { max-width: none; width: 100%; max-height: 100vh; max-height: 100svh; border-radius: 0; }
+    .amodal__scroll { max-height: 100vh; max-height: 100svh; padding: 64px 24px 40px; }
   }
 
   /* controls — hidden unless the URL contains ?tune */
@@ -445,6 +405,7 @@
     .node.is-active::before, .node:hover::before, .node:focus-within::before { animation: none; }
     .amodal__join::after { animation: none; }
     .amodal__close:hover { transform: none; }
+    .amodal__card { transform: none; transition: opacity .3s ease; }   /* fade only, no scale */
   }
 </style>
 </head>
@@ -476,12 +437,10 @@
     </div>
   </div>
 
-  <!-- Awakening Academy — expanded modal (opens from the flagship node) -->
+  <!-- Awakening Academy — centred modal -->
   <div class="amodal" id="academyModal" aria-hidden="true">
     <div class="amodal__backdrop" data-close></div>
     <div class="amodal__card" role="dialog" aria-modal="true" aria-labelledby="amodalTitle">
-      <!-- ghost: an exact clone of the flagship node (active look); filled by JS -->
-      <div class="amodal__ghost" id="amodalGhost" aria-hidden="true"></div>
       <button class="amodal__close" id="amodalClose" type="button" aria-label="Close">&times;</button>
       <div class="amodal__scroll" tabindex="-1">
        <div class="amodal__content">
@@ -663,198 +622,42 @@
   });
 
   // ============================================================
-  //  AWAKENING ACADEMY MODAL — the SAME node grows. The real node is
-  //  hidden and this card takes its exact place/size showing the node's
-  //  own text, then morphs (width/height/colour) to the centred glass
-  //  panel while its text fades out and the full info fades in.
-  //  Esc / X / backdrop close; focus returns to the node.
+  //  AWAKENING ACADEMY MODAL — a centred glass panel that fades in with a
+  //  subtle scale. No size morph of any text, so nothing can "jump".
+  //  Esc / X / backdrop close. Show/hide is CSS-driven (.is-open); the
+  //  overlay stays visible through the fade-out via a delayed visibility.
   // ============================================================
   var amodal = document.getElementById('academyModal');
-  var amCard = amodal.querySelector('.amodal__card');
   var amScroll = amodal.querySelector('.amodal__scroll');
-  var amContent = amodal.querySelector('.amodal__content');
   var amClose = document.getElementById('amodalClose');
   var amJoin = document.getElementById('amodalJoin');
-  var amGhost = document.getElementById('amodalGhost');
-  var openerNode = null, amBorderTimer = null, amPhaseTimer = null;
-
-  // the flagship node + its phase; clone its markup into the ghost so the ghost
-  // is a pixel-exact mirror of the node's active look (title + price + CTA).
   var academyNode = document.querySelector('.node[data-id="academy"]');
   var academyPhase = academyNode ? parseInt(academyNode.getAttribute('data-phase'), 10) : null;
-  if (academyNode) amGhost.innerHTML = academyNode.innerHTML;
-
-  // read a node's rect at its FINAL (active) size, ignoring any in-flight
-  // transition, so the card starts/ends exactly on the bloomed node.
-  function stableRect(node){
-    var prev = node.style.transition;
-    node.style.transition = 'none';
-    void node.offsetWidth;
-    var r = centreOf(node);
-    node.style.transition = prev;
-    return r;
-  }
-
-  // ease-out for the box resize. The resize is its OWN phase now (empty box —
-  // text has already faded), so this only animates geometry + colours, cleanly.
-  var EASE = 'cubic-bezier(.33,1,.68,1)';
-  var DUR = 0.4;
-  var MORPH = 'left ' + DUR + 's ' + EASE + ', top ' + DUR + 's ' + EASE + ', width ' + DUR + 's ' + EASE + ', height ' + DUR + 's ' + EASE + ',' +
-             'background-color ' + DUR + 's ease, border-color ' + DUR + 's ease, border-radius ' + DUR + 's ease, box-shadow ' + DUR + 's ease';
-
-  // run cb exactly when the card's size morph finishes (transitionend on width),
-  // with a fallback timeout — so the hand-off happens when the box has settled,
-  // never a frame early (which would look like a size jump).
-  var morphHandler = null;
-  function cancelMorph(){
-    if (!morphHandler) return;
-    amCard.removeEventListener('transitionend', morphHandler.h);
-    clearTimeout(morphHandler.fb); morphHandler = null;
-  }
-  function afterMorph(cb){
-    cancelMorph();
-    function h(e){ if (e.target === amCard && e.propertyName === 'width'){ cancelMorph(); cb(); } }
-    morphHandler = { h: h, fb: setTimeout(function(){ cancelMorph(); cb(); }, DUR * 1000 + 140) };
-    amCard.addEventListener('transitionend', h);
-  }
-
-  function centreOf(el){ var r = el.getBoundingClientRect(); return { cx:r.left+r.width/2, cy:r.top+r.height/2, w:r.width, h:r.height }; }
-
-  // compute the centred final geometry (measures the natural content height)
-  function finalGeom(){
-    var vw = innerWidth, vh = innerHeight, mobile = vw <= 520;
-    var w = mobile ? vw : Math.min(560, vw - 48);
-    amCard.style.transition = 'none';
-    amCard.style.width = w + 'px';
-    var padV = mobile ? (62 + 40) : (42 + 34);   // .amodal__scroll vertical padding
-    var natH = amContent.getBoundingClientRect().height + padV;
-    var h = mobile ? vh : Math.min(natH, Math.round(vh * 0.9));
-    return { w:w, h:h, mobile:mobile };
-  }
+  var amHideTimer = null;
 
   function openAcademy(node){
-    openerNode = node || null;
-    amOpen = true;                             // lock the sky on Academy's phase
-    cancelMorph(); clearTimeout(amBorderTimer); clearTimeout(amPhaseTimer);
-    if (node) node.classList.remove('am-return');
-    amodal.classList.remove('is-closing');
+    amOpen = true;                                   // lock the sky on Academy's phase
+    clearTimeout(amHideTimer);
+    if (node) setPhase(academyPhase, node);          // keep the Academy sky behind the glass
+    amScroll.scrollTop = 0;
+    amodal.classList.remove('is-fading');
     amodal.classList.add('is-open');
     amodal.setAttribute('aria-hidden', 'false');
     document.documentElement.style.overflow = 'hidden';
-    amScroll.scrollTop = 0;
-    amCard.classList.remove('is-done');
-
-    var g = finalGeom();
-
-    // reduced motion (or no node): present expanded, no morph
-    if (reduce || !node){
-      amCard.style.transition = 'none';
-      amCard.style.left = '50%'; amCard.style.top = '50%';
-      amCard.style.width = g.w + 'px'; amCard.style.height = g.h + 'px';
-      amCard.style.borderRadius = g.mobile ? '0px' : '';
-      amCard.classList.remove('show-ghost');
-      amCard.classList.add('is-expanded', 'show-content', 'is-done');
-      if (amClose.focus) amClose.focus();
-      return;
-    }
-
-    // START: place the card exactly over the node in its ACTIVE (bloomed) size,
-    // showing the ghost (= the node's own text) INSTANTLY. It IS the node.
-    node.classList.add('is-active');
-    var n = stableRect(node);
-    amCard.classList.remove('is-expanded', 'show-content');
-    amGhost.style.transition = 'none';         // no fade — the ghost is just there
-    amCard.classList.add('show-ghost');
-    amCard.style.transition = 'none';
-    amCard.style.borderRadius = '';
-    amCard.style.left = n.cx + 'px'; amCard.style.top = n.cy + 'px';
-    amCard.style.width = n.w + 'px'; amCard.style.height = n.h + 'px';
-    node.style.visibility = 'hidden';          // hide the real node -> looks like it IS this card
-    void amCard.offsetWidth;                   // reflow so the start state is committed
-    amGhost.style.transition = '';             // restore fade for the way out
-
-    // PHASE 1 — hold the node's text a beat (continuity), then fade it OUT
-    // while the box is still node size.  (ghost fade = .15s)
-    amPhaseTimer = setTimeout(function(){
-      amCard.classList.remove('show-ghost');
-
-      // PHASE 2 — wait until the ghost is FULLY gone (no overlap), then grow
-      // the EMPTY box to the panel.
-      amPhaseTimer = setTimeout(function(){
-        amCard.style.transition = MORPH;
-        amCard.classList.add('is-expanded');
-        if (g.mobile) amCard.style.borderRadius = '0px';
-        amCard.style.left = '50%'; amCard.style.top = '50%';
-        amCard.style.width = g.w + 'px'; amCard.style.height = g.h + 'px';
-
-        // PHASE 3 — box settled at panel size: NOW fade the info IN.
-        afterMorph(function(){
-          amCard.classList.add('show-content', 'is-done');
-          if (amClose.focus) amClose.focus();
-        });
-      }, 180);   // 150ms ghost fade + 30ms buffer
-    }, 60);
+    if (amClose.focus) amClose.focus();
   }
 
   function closeAcademy(){
-    if (!amodal.classList.contains('is-open') || amodal.classList.contains('is-closing')) return;
-    cancelMorph(); clearTimeout(amBorderTimer); clearTimeout(amPhaseTimer);
-    var node = openerNode; openerNode = null;
+    if (!amodal.classList.contains('is-open')) return;
     amOpen = false;
-    // keep the flagship node ACTIVE (price + CTA) so the card lands on the
-    // "card with price"; sky stays on Academy's phase too (no jump to dark).
-    if (node) setPhase(academyPhase, node);
-    amCard.classList.remove('is-done');
-    amScroll.scrollTop = 0;
-    document.documentElement.style.overflow = '';
-    // keep the modal VISIBLE during the shrink; only fade the backdrop for now
-    amodal.classList.add('is-closing');
+    setPhase(null, null);                            // sky eases back to night
+    amodal.classList.remove('is-open');
+    amodal.classList.add('is-fading');              // keep visible through the fade-out...
     amodal.setAttribute('aria-hidden', 'true');
-
-    // reduced motion / no node: hide immediately
-    if (reduce || !node){
-      amodal.classList.remove('is-open', 'is-closing');
-      amCard.classList.remove('is-expanded', 'show-content', 'show-ghost');
-      amCard.style.transition = 'none';
-      amCard.style.left = ''; amCard.style.top = '';
-      amCard.style.width = ''; amCard.style.height = ''; amCard.style.borderRadius = '';
-      if (node) node.style.visibility = '';
-      return;
-    }
-
-    // reveal the real node at the very end, matching the ghost exactly
-    function finish(){
-      amodal.classList.remove('is-open', 'is-closing');
-      amCard.style.transition = 'none';
-      amCard.classList.remove('is-expanded', 'show-content', 'show-ghost');
-      amCard.style.left = ''; amCard.style.top = '';
-      amCard.style.width = ''; amCard.style.height = ''; amCard.style.borderRadius = '';
-      node.classList.add('am-return');                 // hold the rainbow border off...
-      node.style.visibility = '';
-      amBorderTimer = setTimeout(function(){ node.classList.remove('am-return'); }, 200);
-    }
-
-    var n = stableRect(node);                          // node's active (bloomed) rect
-
-    // PHASE 1 — fade the big panel text OUT while the box is still panel size.
-    amCard.classList.remove('show-content');
-
-    // PHASE 2 — wait until the text is FULLY gone (no overlap), then shrink the
-    // EMPTY box to node size.
-    amPhaseTimer = setTimeout(function(){
-      amCard.style.transition = MORPH;
-      amCard.classList.remove('is-expanded');
-      amCard.style.borderRadius = '';
-      amCard.style.left = n.cx + 'px'; amCard.style.top = n.cy + 'px';
-      amCard.style.width = n.w + 'px'; amCard.style.height = n.h + 'px';
-
-      // PHASE 3 — box settled at node size: fade the node's text IN, then hand
-      // off to the real node (identical) once it's fully in.
-      afterMorph(function(){
-        amCard.classList.add('show-ghost');
-        amPhaseTimer = setTimeout(finish, 180);   // after the .15s ghost fade-in
-      });
-    }, 180);   // 150ms content fade + 30ms buffer
+    document.documentElement.style.overflow = '';
+    if (amClose.blur) amClose.blur();
+    // ...then drop out of tab order once the fade has finished
+    amHideTimer = setTimeout(function(){ amodal.classList.remove('is-fading'); }, 440);
   }
 
   amClose.addEventListener('click', closeAcademy);
@@ -862,7 +665,7 @@
     if (e.target.hasAttribute('data-close')) closeAcademy();
   });
   amJoin.addEventListener('click', function (e) {
-    // placeholder — no payment link yet; swap href="#" for the real URL to enable
+    // placeholder — no payment link (this is a demo); swap href="#" for a real URL
     if (amJoin.getAttribute('href') === '#') e.preventDefault();
   });
   document.addEventListener('keydown', function (e) {
