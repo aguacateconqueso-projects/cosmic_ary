@@ -38,9 +38,13 @@ README.md       Doc de instalación/deploy
 > Para revivirlo: `git show <commit>:index.html` de la Sesión 2/3, o restaurarlo desde el commit previo al PR #5.
 
 ### Sistema de diseño (referencia rápida)
-- **Colores:** cosmos `#0B0E1A` · crema `#F2EDE4` · tinta `#14120F` · rojo profundo `#8B1A1A` · rojo brillante `#C0392B` · rojo CTA `#9E2422`
-- **Tipografía:** `Fraunces` (display, serif) · `Inter` (texto)
-- Las variables de color viven en `:root` dentro de `styles.css`.
+- **Colores:** cosmos `#0B0E1A` · crema `#F2EDE4` · tinta `#14120F`
+- **CTAs (Sesión 20):** ya **no** son rojos. Acción = gradiente cósmico violeta→azul
+  `--cta: linear-gradient(120deg,#6E49E6,#4F72E6 58%,#46A3DE)` · sólido `--accent #5B6BE6` · glow
+  `--cta-glow 86,100,232`. (El rojo `#C0392B/#8B1A1A/#9E2422` quedó **retirado** del home "cool".)
+- **Tipografía:** `Fraunces` (display, serif) · `Jost` (UI/texto). *(`Inter` ya no se usa en el home.)*
+- ⚠️ **Ojo:** en el home "cool" (`index.html`) las variables de color viven en `:root` dentro del
+  propio `index.html` (CSS inline), **no** en `styles.css` (ese es del demo "sobrio" reservado).
 
 ---
 
@@ -55,13 +59,19 @@ README.md       Doc de instalación/deploy
 - [x] **Botones pulidos:** fuente Jost, precios ocultos que florecen en hover, Academy arriba al centro, tarjetas compactas (sin espacio muerto), borde arcoíris giratorio en hover
 - [x] **Modal de Awakening Academy** — click en el nodo flagship abre un **modal centrado** (fade + scale
   suave, backdrop glass) con toda la info de la oferta + CTA "Become a Member". **Aprobado y fluido.**
+- [x] **Formato del modal (Sesión 18):** "Awakening Academy" en una línea + bold, precio a 31px (arreglado
+  bug de especificidad que lo dejaba en 15px), sin emojis. **Mergeado (#29).**
+- [x] **Botón cerrar del modal (Sesión 19):** "×" en SVG (antes glifo de texto) → siempre centrada al
+  rotar en hover. **Mergeado (#30).**
+- [x] **CTAs sin rojo (Sesión 20):** botones de acción a gradiente cósmico violeta→azul; acentos rojos
+  decorativos migrados al mismo tono; hover del cerrar a glass neutro. **PR #31 (pendiente de merge).**
 - [ ] Afinar arte de los 7 cielos
 - [ ] Enlaces reales (YouTube/IG/TikTok/Spotify/podcast) — hoy `#` placeholder
 - [ ] (Opcional) modales para el resto de ofertas si se decide replicar el patrón
 
-**PRs recientes mergeados:** #12 (dos pantallas), #13/#15 (botones), #17→#27 (modal de Academy: primero
-con morph, iterado ~6 veces por el salto de texto, y finalmente resuelto pasando a **modal centrado** en #27).
-**Sin PRs abiertos.** Último `main`: modal de Academy centrado, aprobado.
+**PRs recientes mergeados:** #12 (dos pantallas), #13/#15 (botones), #17→#27 (modal con morph → centrado),
+#29 (formato del modal), #30 (× centrada).
+**PR abierto:** **#31** — CTAs de rojo → gradiente cósmico (pendiente de merge).
 **URL de producción (Vercel):** `⟶ PENDIENTE: pega aquí la URL del deploy`
 
 > 💡 **Aprendizaje clave (modal):** un "shared-element morph" entre dos textos distintos (título grande
