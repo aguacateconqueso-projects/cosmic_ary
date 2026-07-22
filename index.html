@@ -315,22 +315,20 @@
     /* match the node's box EXACTLY (padding 16/22, no gap — it uses margins)
        so the content doesn't shift when the card hands off to the real node */
     padding: 16px 22px; text-align: center; pointer-events: none;
-    /* CLOSE: the small ghost text only fades in LATE (delay), once the box has
-       shrunk near node size — so it never floats small over the big panel text */
-    opacity: 1; transition: opacity .2s ease .3s;
+    /* hidden by default; JS shows it ONLY while the box is at node size (never
+       during the resize) so the small text never coexists with the big text */
+    opacity: 0; transition: opacity .16s ease;
   }
-  /* OPEN: ghost fades out fast (no delay) while the box is still small */
-  .amodal__card.show-content .amodal__ghost { opacity: 0; transition: opacity .15s ease; }
+  .amodal__card.show-ghost .amodal__ghost { opacity: 1; }
   /* force the node's active state inside the ghost (price + CTA revealed) */
   .amodal__ghost .node__dot { background: #F6C7BE; box-shadow: 0 0 12px 3px rgba(192,57,43,.6); }
   .amodal__ghost .node__price { max-height: 46px; opacity: 1; transform: none; margin-top: 4px; overflow: visible; }
   .amodal__ghost .node__cta { max-height: 54px; opacity: 1; transform: none; margin-top: 6px; overflow: visible; }
 
-  /* full info — CLOSE: fades out fast/early (while box still large); OPEN: fades
-     in as the box opens (short delay) — so big and small text never clash but the
-     panel doesn't sit empty either */
+  /* full info — hidden by default; JS shows it ONLY while the box is at panel
+     size (never during the resize), so big and small text never coexist */
   .amodal__content { opacity: 0; transition: opacity .18s ease; }
-  .amodal__card.show-content .amodal__content { opacity: 1; transition: opacity .34s ease .15s; }
+  .amodal__card.show-content .amodal__content { opacity: 1; }
 
   .amodal__scroll {
     height: 100%; overflow: hidden;
@@ -678,7 +676,7 @@
   var amClose = document.getElementById('amodalClose');
   var amJoin = document.getElementById('amodalJoin');
   var amGhost = document.getElementById('amodalGhost');
-  var openerNode = null, amBorderTimer = null;
+  var openerNode = null, amBorderTimer = null, amPhaseTimer = null;
 
   // the flagship node + its phase; clone its markup into the ghost so the ghost
   // is a pixel-exact mirror of the node's active look (title + price + CTA).
@@ -697,11 +695,12 @@
     return r;
   }
 
-  // ease-out (fast at the start, gentle settle) so the box eases into its final
-  // size instead of holding big and collapsing at the very end.
-  var EASE = 'cubic-bezier(.22,1,.36,1)';
-  var MORPH = 'left .6s ' + EASE + ', top .6s ' + EASE + ', width .6s ' + EASE + ', height .6s ' + EASE + ',' +
-             'background-color .5s ease, border-color .5s ease, border-radius .5s ease, box-shadow .5s ease';
+  // ease-out for the box resize. The resize is its OWN phase now (empty box —
+  // text has already faded), so this only animates geometry + colours, cleanly.
+  var EASE = 'cubic-bezier(.33,1,.68,1)';
+  var DUR = 0.42;
+  var MORPH = 'left ' + DUR + 's ' + EASE + ', top ' + DUR + 's ' + EASE + ', width ' + DUR + 's ' + EASE + ', height ' + DUR + 's ' + EASE + ',' +
+             'background-color ' + DUR + 's ease, border-color ' + DUR + 's ease, border-radius ' + DUR + 's ease, box-shadow ' + DUR + 's ease';
 
   // run cb exactly when the card's size morph finishes (transitionend on width),
   // with a fallback timeout — so the hand-off happens when the box has settled,
@@ -715,7 +714,7 @@
   function afterMorph(cb){
     cancelMorph();
     function h(e){ if (e.target === amCard && e.propertyName === 'width'){ cancelMorph(); cb(); } }
-    morphHandler = { h: h, fb: setTimeout(function(){ cancelMorph(); cb(); }, 760) };
+    morphHandler = { h: h, fb: setTimeout(function(){ cancelMorph(); cb(); }, DUR * 1000 + 140) };
     amCard.addEventListener('transitionend', h);
   }
 
@@ -736,7 +735,7 @@
   function openAcademy(node){
     openerNode = node || null;
     amOpen = true;                             // lock the sky on Academy's phase
-    cancelMorph(); clearTimeout(amBorderTimer);
+    cancelMorph(); clearTimeout(amBorderTimer); clearTimeout(amPhaseTimer);
     if (node) node.classList.remove('am-return');
     amodal.classList.remove('is-closing');
     amodal.classList.add('is-open');
@@ -753,47 +752,56 @@
       amCard.style.left = '50%'; amCard.style.top = '50%';
       amCard.style.width = g.w + 'px'; amCard.style.height = g.h + 'px';
       amCard.style.borderRadius = g.mobile ? '0px' : '';
+      amCard.classList.remove('show-ghost');
       amCard.classList.add('is-expanded', 'show-content', 'is-done');
       if (amClose.focus) amClose.focus();
       return;
     }
 
     // START: place the card exactly over the node in its ACTIVE (bloomed) size,
-    // so the ghost (title + price + CTA) lines up with the node they clicked.
+    // showing the ghost (= the node's own text) INSTANTLY. It IS the node.
     node.classList.add('is-active');
     var n = stableRect(node);
     amCard.classList.remove('is-expanded', 'show-content');
+    amGhost.style.transition = 'none';         // no fade — the ghost is just there
+    amCard.classList.add('show-ghost');
     amCard.style.transition = 'none';
     amCard.style.borderRadius = '';
     amCard.style.left = n.cx + 'px'; amCard.style.top = n.cy + 'px';
     amCard.style.width = n.w + 'px'; amCard.style.height = n.h + 'px';
     node.style.visibility = 'hidden';          // hide the real node -> looks like it IS this card
     void amCard.offsetWidth;                   // reflow so the start state is committed
+    amGhost.style.transition = '';             // restore fade for the way out
 
-    // GROW: morph to the centred panel; text crossfades as it expands
-    requestAnimationFrame(function(){
-      amCard.style.transition = MORPH;
-      amCard.classList.add('is-expanded');
-      if (g.mobile) amCard.style.borderRadius = '0px';
-      amCard.style.left = '50%'; amCard.style.top = '50%';
-      amCard.style.width = g.w + 'px'; amCard.style.height = g.h + 'px';
-      requestAnimationFrame(function(){ amCard.classList.add('show-content'); });
-    });
+    // PHASE 1 — hold the node's text a beat (continuity), then fade it OUT
+    // while the box is still node size.
+    amPhaseTimer = setTimeout(function(){
+      amCard.classList.remove('show-ghost');
 
-    afterMorph(function(){
-      amCard.classList.add('is-done');         // enable inner scrolling after the morph
-      if (amClose.focus) amClose.focus();
-    });
+      // PHASE 2 — once the text is gone, grow the EMPTY box to the panel.
+      amPhaseTimer = setTimeout(function(){
+        amCard.style.transition = MORPH;
+        amCard.classList.add('is-expanded');
+        if (g.mobile) amCard.style.borderRadius = '0px';
+        amCard.style.left = '50%'; amCard.style.top = '50%';
+        amCard.style.width = g.w + 'px'; amCard.style.height = g.h + 'px';
+
+        // PHASE 3 — box settled at panel size: fade the info IN.
+        afterMorph(function(){
+          amCard.classList.add('show-content', 'is-done');
+          if (amClose.focus) amClose.focus();
+        });
+      }, 160);
+    }, 110);
   }
 
   function closeAcademy(){
     if (!amodal.classList.contains('is-open') || amodal.classList.contains('is-closing')) return;
-    cancelMorph();
+    cancelMorph(); clearTimeout(amBorderTimer); clearTimeout(amPhaseTimer);
     var node = openerNode; openerNode = null;
     amOpen = false;
-    // keep the flagship node ACTIVE (price + CTA showing) so the card shrinks
-    // back into the "card with price", not the initial title-only node. Sky
-    // stays on Academy's phase too (no jump back to dark).
+    // keep the flagship node ACTIVE (price + CTA) so the card lands on the
+    // "card with price"; sky stays on Academy's phase too (no jump to dark).
     if (node) setPhase(academyPhase, node);
     amCard.classList.remove('is-done');
     amScroll.scrollTop = 0;
@@ -802,33 +810,49 @@
     amodal.classList.add('is-closing');
     amodal.setAttribute('aria-hidden', 'true');
 
-    function finish(){
-      amodal.classList.remove('is-open', 'is-closing');   // NOW hide it (morph already played)
+    // reduced motion / no node: hide immediately
+    if (reduce || !node){
+      amodal.classList.remove('is-open', 'is-closing');
+      amCard.classList.remove('is-expanded', 'show-content', 'show-ghost');
       amCard.style.transition = 'none';
-      amCard.classList.remove('is-expanded', 'show-content');
       amCard.style.left = ''; amCard.style.top = '';
       amCard.style.width = ''; amCard.style.height = ''; amCard.style.borderRadius = '';
-      // reveal the real node, still ACTIVE (title + price + CTA) so it matches
-      // the ghost exactly — the close lands on the card with price, no jump.
-      if (node){
-        node.classList.add('am-return');   // hold the rainbow border off...
-        node.style.visibility = '';
-        // ...then let it fade in after a short beat (avoids a hard pop)
-        amBorderTimer = setTimeout(function(){ node.classList.remove('am-return'); }, 200);
-      }
+      if (node) node.style.visibility = '';
+      return;
     }
 
-    if (!reduce && node){
-      var n = stableRect(node);                  // node's active (bloomed) rect
+    // reveal the real node at the very end, matching the ghost exactly
+    function finish(){
+      amodal.classList.remove('is-open', 'is-closing');
+      amCard.style.transition = 'none';
+      amCard.classList.remove('is-expanded', 'show-content', 'show-ghost');
+      amCard.style.left = ''; amCard.style.top = '';
+      amCard.style.width = ''; amCard.style.height = ''; amCard.style.borderRadius = '';
+      node.classList.add('am-return');                 // hold the rainbow border off...
+      node.style.visibility = '';
+      amBorderTimer = setTimeout(function(){ node.classList.remove('am-return'); }, 200);
+    }
+
+    var n = stableRect(node);                          // node's active (bloomed) rect
+
+    // PHASE 1 — fade the big panel text OUT while the box is still panel size.
+    amCard.classList.remove('show-content');
+
+    // PHASE 2 — once the text is gone, shrink the EMPTY box to node size.
+    amPhaseTimer = setTimeout(function(){
       amCard.style.transition = MORPH;
-      amCard.classList.remove('is-expanded', 'show-content');  // panel info fades out, ghost (price) stays
+      amCard.classList.remove('is-expanded');
       amCard.style.borderRadius = '';
       amCard.style.left = n.cx + 'px'; amCard.style.top = n.cy + 'px';
       amCard.style.width = n.w + 'px'; amCard.style.height = n.h + 'px';
-      afterMorph(finish);                        // reveal the node the instant the shrink settles
-    } else {
-      finish();
-    }
+
+      // PHASE 3 — box settled at node size: fade the node's text IN, then hand
+      // off to the real node (identical), so the text appears already at final size.
+      afterMorph(function(){
+        amCard.classList.add('show-ghost');
+        amPhaseTimer = setTimeout(finish, 150);
+      });
+    }, 150);
   }
 
   amClose.addEventListener('click', closeAcademy);
